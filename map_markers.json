@@ -113,7 +113,9 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
-    "spirits": [],
+    "spirits": [
+      "小龙王"
+    ],
     "isSecondary": false
   },
   {
@@ -243,6 +245,32 @@
     ],
     "spirits": [
       "仙鹿"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 81,
+    "y": 295,
+    "name": "嗅幻草",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "嗅幻草"
+    ],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 42,
+    "y": 210,
+    "name": "毒蛇王",
+    "direction": "bottom",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "毒蛇王"
     ],
     "isSecondary": true
   }
