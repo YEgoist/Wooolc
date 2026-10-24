@@ -7,7 +7,7 @@
     "zIndex": 10,
     "remark": "",
     "collectibles": [
-      "千年莲子心"
+      "千年莲子心-补元丹(妖级)"
     ],
     "spirits": [],
     "isSecondary": false
@@ -46,7 +46,7 @@
     "zIndex": 2,
     "remark": "",
     "collectibles": [
-      "银色月桂"
+      "银色月桂-延寿丹(灵级)"
     ],
     "spirits": [],
     "isSecondary": false
@@ -59,7 +59,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "菊苣"
+      "菊苣-赤血丹(灵级)"
     ],
     "spirits": [],
     "isSecondary": false
@@ -83,7 +83,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "漱玉花"
+      "漱玉花-百转丹(妖级)"
     ],
     "spirits": [
       "亡灵"
@@ -91,14 +91,14 @@
     "isSecondary": false
   },
   {
-    "x": 65,
-    "y": 198,
+    "x": 66,
+    "y": 199,
     "name": "毒蛇谷",
     "direction": "top",
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "火铃草"
+      "火铃草-凝血丹(妖级)"
     ],
     "spirits": [
       "青鸾"
@@ -126,7 +126,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "幽灵菇"
+      "幽灵菇-冰心丹(灵级)"
     ],
     "spirits": [
       "土精灵宝宝"
@@ -154,7 +154,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "千年灵芝"
+      "千年灵芝-培元丹(妖级)"
     ],
     "spirits": [
       "火神"
@@ -169,8 +169,8 @@
     "zIndex": 5,
     "remark": "",
     "collectibles": [
-      "九节菖蒲",
-      "莲藕"
+      "九节菖蒲-回灵丹(妖级)",
+      "莲藕-增气丹(妖级)"
     ],
     "spirits": [
       "药园弓箭手",
@@ -186,7 +186,7 @@
     "zIndex": 1,
     "remark": "殷九黎掉落“轰天雷”",
     "collectibles": [
-      "七七竹"
+      "七七竹-冰心丹(妖级)"
     ],
     "spirits": [
       "皇族卫士"
@@ -199,7 +199,7 @@
     "name": "魔礼青",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "注：彩叶草没有相应配方",
     "collectibles": [
       "彩叶草"
     ],
@@ -227,7 +227,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "回春草"
+      "回春草-回灵丹(灵级)"
     ],
     "spirits": [],
     "isSecondary": false
@@ -240,8 +240,8 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "树珍珠",
-      "甘草"
+      "树珍珠-赤血丹(妖级)",
+      "甘草-玲珑丹(妖级)"
     ],
     "spirits": [
       "仙鹿"
@@ -256,7 +256,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "嗅幻草"
+      "嗅幻草-延寿丹(妖级)"
     ],
     "spirits": [],
     "isSecondary": true
@@ -295,7 +295,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "黑石兰"
+      "黑石兰-增气丹(灵级)"
     ],
     "spirits": [],
     "isSecondary": false
