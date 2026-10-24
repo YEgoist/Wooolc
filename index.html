@@ -8,22 +8,10 @@
         
         .panel { background: #34495e; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 12px; max-height: 90vh; overflow-y: auto; }
         
-        /* 面板宽度 */
         .list-panel { width: 320px; flex-shrink: 0; }
         .sidebar { width: 320px; flex-shrink: 0; }
         
-        /* 容器大小并开启滚动条 */
-        .canvas-container { 
-            background: #fff; 
-            padding: 10px; 
-            border-radius: 8px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
-            flex-shrink: 0; 
-            max-height: 90vh; 
-            max-width: calc(100vw - 740px); /* 预留两侧面板空间 */
-            overflow: auto;
-        }
-        
+        .canvas-container { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); flex-shrink: 0; max-height: 90vh; max-width: calc(100vw - 740px); overflow: auto; }
         canvas { cursor: crosshair; display: block; }
         
         .panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #4b6584; padding-bottom: 10px; margin-bottom: 10px; }
@@ -33,6 +21,11 @@
         .live-coord-box { background: #1abc9c; padding: 10px; border-radius: 6px; text-align: center; font-family: monospace; font-size: 18px; font-weight: bold; color: #fff; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
         
         button { padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        
+        /* 刷新按钮样式 */
+        .btn-refresh { background-color: #27ae60; color: #fff; width: 100%; margin-top: 5px; }
+        .btn-refresh:hover { background-color: #2ecc71; }
+        
         .btn-download { background-color: #3498db; color: #fff; width: 100%; margin-top: 10px;}
         .btn-download:hover { background-color: #2980b9; }
         .btn-download:disabled { background-color: #7f8c8d; cursor: not-allowed; }
@@ -62,7 +55,6 @@
         .popup-extra { color: #f1c40f; font-size: 13px; margin-top: 5px; border-top: 1px dashed #4b6584; padding-top: 5px;}
         .popup-extra.secondary { color: #3498db; }
 
-        /* 统计面板 Modal 样式 */
         #statsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; justify-content: center; align-items: center; }
         .stats-content { background: #34495e; border-radius: 8px; width: 600px; max-width: 90%; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #4b6584; }
         .stats-header { padding: 15px 20px; background: #2c3e50; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #1abc9c; }
@@ -90,7 +82,6 @@
 </head>
 <body>
 
-    <!-- 左侧标记列表面板 -->
     <div class="panel list-panel">
         <div class="panel-header">
             <h3>标记列表 (<span id="pointCount">0</span>)</h3>
@@ -98,12 +89,10 @@
         <ul id="pointList"></ul>
     </div>
 
-    <!-- 中间画布容器 -->
     <div class="canvas-container" id="canvasContainer">
         <canvas id="canvas" width="960" height="960"></canvas>
     </div>
 
-    <!-- 右侧控制面板 -->
     <div class="panel sidebar">
         <div class="panel-header">
             <h2>视图控制</h2>
@@ -111,24 +100,22 @@
         
         <div class="live-coord-box">X: <span id="liveX">--</span> , Y: <span id="liveY">--</span></div>
 
-        <!-- 主次标记与悬停独立开关 -->
         <div class="setting-row">
             <label><input type="checkbox" id="toggleMarkers" checked> 显示主要标记</label>
             <label><input type="checkbox" id="toggleSecondaryMarkers"> 显示次要标记</label>
             <label><input type="checkbox" id="remarkTriggerModeHover"> 悬停显示备注内容</label>
         </div>
 
+        <button class="btn-refresh" id="refreshBtn">🔄 刷新最新数据</button>
         <button class="btn-stats" id="openStatsBtn">📊 数据统计看板</button>
         <button class="btn-download" id="downloadBtn" disabled>下载当前画面</button>
     </div>
 
-    <!-- 备注弹窗 -->
     <div id="remarkPopup">
         <div class="popup-header"><span id="popupTitle">备注内容</span><span class="popup-close" onclick="closePopup()">×</span></div>
         <div class="popup-content" id="popupText"></div>
     </div>
 
-    <!-- 统计看板弹窗 -->
     <div id="statsModal">
         <div class="stats-content">
             <div class="stats-header">
@@ -164,17 +151,17 @@
         // ==================== 外部文件配置区 ====================
         
         // 1. 在这里填写地图图片的外部链接或相对路径
-        const EXTERNAL_MAP_IMAGE_URL = '世界地图.png'; // 例如 './images/map.png' 或 'https://example.com/map.jpg'
+        const EXTERNAL_MAP_IMAGE_URL = '世界地图.png'; 
         
         // 2. 在这里填写标记数据的 JSON 文件链接或相对路径
-        const EXTERNAL_MARKERS_DATA_URL = 'map_markers.json'; // 例如 './data/markers.json' 
+        const EXTERNAL_MARKERS_DATA_URL = 'map_markers.json'; 
         
         // =========================================================
 
         const getEl = id => document.getElementById(id);
 
         const canvas = getEl('canvas'), ctx = canvas.getContext('2d');
-        const downloadBtn = getEl('downloadBtn');
+        const downloadBtn = getEl('downloadBtn'), refreshBtn = getEl('refreshBtn');
         const pointList = getEl('pointList'), pointCount = getEl('pointCount');
         const liveX = getEl('liveX'), liveY = getEl('liveY');
         
@@ -187,17 +174,12 @@
         const tbodyCollectibles = getEl('tbody-collectibles'), tbodySpirits = getEl('tbody-spirits');
 
         let img = new Image(), imgLoaded = false, markers = [], hoverPos = null, currentPopupMarkerId = null;
-
-        // 动态地图尺寸
-        let mapW = 800;
-        let mapH = 800;
+        let mapW = 800, mapH = 800;
         const padding = 80; 
 
         canvas.width = mapW + padding * 2;
         canvas.height = mapH + padding * 2;
 
-        // ==================== 核心函数 ====================
-        
         function closePopup() { 
             remarkPopup.style.display = 'none'; 
             currentPopupMarkerId = null; 
@@ -232,8 +214,7 @@
         }
 
         function updateStatsPanel() {
-            tbodyCollectibles.innerHTML = '';
-            tbodySpirits.innerHTML = '';
+            tbodyCollectibles.innerHTML = ''; tbodySpirits.innerHTML = '';
             let hasCollectibles = false, hasSpirits = false;
 
             markers.forEach(m => {
@@ -246,7 +227,6 @@
                         tbodyCollectibles.innerHTML += `<tr><td class="col-name">${item}</td><td>${markerName}</td><td class="col-coord">${coordStr}</td></tr>`;
                     });
                 }
-
                 if (m.spirits && m.spirits.length > 0) {
                     hasSpirits = true;
                     m.spirits.forEach(item => {
@@ -259,103 +239,88 @@
             if (!hasSpirits) tbodySpirits.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#7f8c8d;">暂无灵宠数据</td></tr>';
         }
 
-        // ==================== 数据初始化 ====================
+        // ==================== 数据加载 ====================
         
-        async function loadExternalData() {
-            // 加载外部地图图片
-            if (EXTERNAL_MAP_IMAGE_URL) {
+        async function loadExternalData(forceRefresh = false) {
+            if (EXTERNAL_MAP_IMAGE_URL && !imgLoaded) {
                 img.onload = function() {
-                    mapW = img.naturalWidth;
-                    mapH = img.naturalHeight;
-                    canvas.width = mapW + padding * 2;
-                    canvas.height = mapH + padding * 2;
-                    imgLoaded = true;
-                    downloadBtn.disabled = false;
+                    mapW = img.naturalWidth; mapH = img.naturalHeight;
+                    canvas.width = mapW + padding * 2; canvas.height = mapH + padding * 2;
+                    imgLoaded = true; downloadBtn.disabled = false;
                     render();
                 };
-                img.onerror = function() {
-                    console.error("图片加载失败，请检查 EXTERNAL_MAP_IMAGE_URL 路径配置。");
-                    render();
-                };
+                img.onerror = function() { console.error("图片加载失败"); render(); };
                 img.src = EXTERNAL_MAP_IMAGE_URL;
             }
 
-            // 加载外部 JSON 数据
             if (EXTERNAL_MARKERS_DATA_URL) {
                 try {
-                    const response = await fetch(EXTERNAL_MARKERS_DATA_URL);
+                    // cache: 'reload' 会通知浏览器忽略本地缓存去服务器拉取最新文件
+                    // 这里同时在末尾加入时间戳参数，作为双重保险应对某些极度顽固的代理层缓存
+                    const url = forceRefresh 
+                        ? `${EXTERNAL_MARKERS_DATA_URL}?t=${new Date().getTime()}` 
+                        : EXTERNAL_MARKERS_DATA_URL;
+
+                    const response = await fetch(url, { cache: forceRefresh ? 'reload' : 'default' });
                     if (!response.ok) throw new Error('网络响应异常');
-                    const data = await response.json();
                     
+                    const data = await response.json();
                     if (Array.isArray(data)) {
                         markers = data;
                         renderList();
                         render();
+                        if(forceRefresh) alert("✅ 数据已刷新为最新版本！");
                     }
                 } catch (e) {
-                    console.error("标记数据加载失败，请检查 EXTERNAL_MARKERS_DATA_URL 路径或跨域配置:", e);
-                    // 如果跨域或者本地 file:// 协议限制，可能需要通过服务器环境打开此 HTML
+                    console.error("标记数据加载失败:", e);
+                    if(forceRefresh) alert("❌ 数据刷新失败，请确认文件路径是否正确。");
                 }
             }
         }
 
-        // ==================== 事件监听 ====================
+        // 点击刷新按钮
+        refreshBtn.addEventListener('click', function() {
+            refreshBtn.innerText = "🔄 加载中...";
+            refreshBtn.disabled = true;
+            
+            loadExternalData(true).finally(() => {
+                refreshBtn.innerText = "🔄 刷新最新数据";
+                refreshBtn.disabled = false;
+            });
+        });
+
+        // ==================== 事件监听与绘制 ====================
         toggleMarkers.addEventListener('change', function() { render(); closePopup(); });
         toggleSecondaryMarkers.addEventListener('change', function() { render(); closePopup(); });
         remarkTriggerModeHover.addEventListener('change', closePopup);
 
-        openStatsBtn.addEventListener('click', function() {
-            updateStatsPanel();
-            statsModal.style.display = 'flex';
-        });
-
+        openStatsBtn.addEventListener('click', function() { updateStatsPanel(); statsModal.style.display = 'flex'; });
         closeStatsBtn.addEventListener('click', function() { statsModal.style.display = 'none'; });
         statsModal.addEventListener('click', function(e) { if (e.target === statsModal) statsModal.style.display = 'none'; });
+        downloadBtn.addEventListener('click', function() { const link = document.createElement('a'); link.download = 'map_snapshot.png'; link.href = canvas.toDataURL('image/png'); link.click(); });
 
-        downloadBtn.addEventListener('click', function() {
-            const link = document.createElement('a'); link.download = 'map_snapshot.png'; link.href = canvas.toDataURL('image/png'); link.click();
-        });
-
-        // ==================== 核心交互与绘制 ====================
-        
         function getVisibleMarkers() {
-            return markers.filter(m => {
-                if (m.isSecondary) return toggleSecondaryMarkers.checked;
-                return toggleMarkers.checked;
-            });
+            return markers.filter(m => m.isSecondary ? toggleSecondaryMarkers.checked : toggleMarkers.checked);
         }
 
         function getMapCoord(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width; 
-            const scaleY = canvas.height / rect.height;
-            const mouseX = (e.clientX - rect.left) * scaleX;
-            const mouseY = (e.clientY - rect.top) * scaleY;
-            const mapX = mouseX - padding;
-            const mapY = mouseY - padding;
-            return { mouseX, mouseY, mapX, mapY };
+            const rect = canvas.getBoundingClientRect(), scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+            return { mouseX: (e.clientX - rect.left) * scaleX, mouseY: (e.clientY - rect.top) * scaleY, mapX: (e.clientX - rect.left) * scaleX - padding, mapY: (e.clientY - rect.top) * scaleY - padding };
         }
 
         function getHitMarker(clickX, clickY) {
             const sortedMarkers = getVisibleMarkers().sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0));
             for (let marker of sortedMarkers) {
-                let pixelX = padding + marker.x;
-                let pixelY = padding + marker.y;
+                let pixelX = padding + marker.x, pixelY = padding + marker.y;
                 if (Math.sqrt(Math.pow(clickX - pixelX, 2) + Math.pow(clickY - pixelY, 2)) <= 15) return marker;
-
                 ctx.font = "bold 14px Arial";
-                let lines = parseTextToLines(marker.name);
-                let lineHeight = 16, totalTextHeight = lines.length * lineHeight, maxTextWidth = 0;
+                let lines = parseTextToLines(marker.name), lineHeight = 16, totalTextHeight = lines.length * lineHeight, maxTextWidth = 0;
                 lines.forEach(line => { maxTextWidth = Math.max(maxTextWidth, ctx.measureText(line).width); });
-                
-                let bgPadding = 5, bgWidth = maxTextWidth + bgPadding * 2, bgHeight = totalTextHeight + bgPadding * 2;
-                let bgX, bgY, dir = marker.direction || 'top';
-
+                let bgPadding = 5, bgWidth = maxTextWidth + bgPadding * 2, bgHeight = totalTextHeight + bgPadding * 2, bgX, bgY, dir = marker.direction || 'top';
                 if (dir === 'top') { bgX = pixelX - bgWidth / 2; bgY = pixelY - 15 - bgHeight; } 
                 else if (dir === 'bottom') { bgX = pixelX - bgWidth / 2; bgY = pixelY + 15; } 
                 else if (dir === 'left') { bgX = pixelX - 15 - bgWidth; bgY = pixelY - bgHeight / 2; } 
                 else if (dir === 'right') { bgX = pixelX + 15; bgY = pixelY - bgHeight / 2; }
-
                 if (clickX >= bgX && clickX <= bgX + bgWidth && clickY >= bgY && clickY <= bgY + bgHeight) return marker;
             }
             return null;
@@ -363,21 +328,12 @@
 
         canvas.addEventListener('mousemove', function(e) {
             const { mouseX, mouseY, mapX, mapY } = getMapCoord(e);
-
             if (mouseX >= padding && mouseX <= padding + mapW && mouseY >= padding && mouseY <= padding + mapH) {
-                hoverPos = { x: mapX, y: mapY };
-                liveX.innerText = Math.round(mapX); 
-                liveY.innerText = Math.round(mapY);
-                render();
-
+                hoverPos = { x: mapX, y: mapY }; liveX.innerText = Math.round(mapX); liveY.innerText = Math.round(mapY); render();
                 if (remarkTriggerModeHover.checked) {
                     const hit = getHitMarker(mouseX, mouseY);
-                    if (hit) {
-                        if (currentPopupMarkerId !== hit.id) {
-                            currentPopupMarkerId = hit.id;
-                            showPopup(hit, e.pageX, e.pageY);
-                        }
-                    } else if (currentPopupMarkerId !== null) closePopup();
+                    if (hit) { if (currentPopupMarkerId !== hit.id) { currentPopupMarkerId = hit.id; showPopup(hit, e.pageX, e.pageY); } } 
+                    else if (currentPopupMarkerId !== null) closePopup();
                 }
             } else {
                 if (hoverPos !== null) { hoverPos = null; render(); }
@@ -388,24 +344,15 @@
 
         canvas.addEventListener('mouseleave', function() {
             if (hoverPos !== null) { hoverPos = null; render(); }
-            liveX.innerText = '--'; liveY.innerText = '--';
-            if (remarkTriggerModeHover.checked) closePopup();
+            liveX.innerText = '--'; liveY.innerText = '--'; if (remarkTriggerModeHover.checked) closePopup();
         });
 
         canvas.addEventListener('click', function(e) {
             const { mouseX, mouseY } = getMapCoord(e);
             if (mouseX >= padding && mouseX <= padding + mapW && mouseY >= padding && mouseY <= padding + mapH) {
                 const hit = getHitMarker(mouseX, mouseY);
-                if (hit) {
-                    if (!remarkTriggerModeHover.checked) {
-                        currentPopupMarkerId = hit.id;
-                        showPopup(hit, e.pageX, e.pageY);
-                    } else {
-                        closePopup();
-                    }
-                } else {
-                    closePopup();
-                }
+                if (hit) { if (!remarkTriggerModeHover.checked) { currentPopupMarkerId = hit.id; showPopup(hit, e.pageX, e.pageY); } else closePopup(); } 
+                else closePopup();
             }
         });
 
@@ -413,24 +360,16 @@
             let titleHtml = marker.name.replace(/\\n/g, '<br>').replace(/\\r/g, '').replace(/\n/g, '<br>').replace(/\r/g, '');
             if (marker.isSecondary) titleHtml += ' <span style="color:#3498db; font-size:12px;">[次要]</span>';
             popupTitle.innerHTML = titleHtml;
-            
             let contentHtml = '';
             if (marker.remark && marker.remark.trim() !== '') contentHtml += `<div>${marker.remark}</div>`;
-            
             let extraClass = marker.isSecondary ? "popup-extra secondary" : "popup-extra";
             if (marker.collectibles && marker.collectibles.length > 0) contentHtml += `<div class="${extraClass}">采集：${marker.collectibles.join('、')}</div>`;
             if (marker.spirits && marker.spirits.length > 0) contentHtml += `<div class="${extraClass}">灵宠：${marker.spirits.join('、')}</div>`;
             if (contentHtml === '') contentHtml = '<div style="color:#7f8c8d; text-align:center;">无详细数据</div>';
-
-            popupText.innerHTML = contentHtml;
-            remarkPopup.style.display = 'block';
-            
-            let popupW = remarkPopup.offsetWidth, popupH = remarkPopup.offsetHeight;
-            let leftPos = pageX + 15, topPos = pageY + 15;
-            
+            popupText.innerHTML = contentHtml; remarkPopup.style.display = 'block';
+            let popupW = remarkPopup.offsetWidth, popupH = remarkPopup.offsetHeight, leftPos = pageX + 15, topPos = pageY + 15;
             if (leftPos + popupW > window.innerWidth) leftPos = pageX - popupW - 15;
             if (topPos + popupH > window.innerHeight) topPos = pageY - popupH - 15;
-
             remarkPopup.style.left = leftPos + 'px'; remarkPopup.style.top = topPos + 'px';
         }
 
@@ -438,140 +377,6 @@
 
         function render() {
             ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            if (imgLoaded) {
-                ctx.drawImage(img, padding, padding, mapW, mapH);
-            } else {
-                ctx.fillStyle = "#e0e0e0";
-                ctx.fillRect(padding, padding, mapW, mapH);
-                ctx.fillStyle = "#666"; ctx.font = "20px Arial"; ctx.textAlign = "center";
-                ctx.fillText("地图加载中...", canvas.width/2, canvas.height/2);
-            }
-
-            // 绘制X轴刻度
+            if (imgLoaded) ctx.drawImage(img, padding, padding, mapW, mapH);
+            else { ctx.fillStyle = "#e0e0e0"; ctx.fillRect(padding, padding, mapW, mapH); ctx.fillStyle = "#666"; ctx.font = "20px Arial"; ctx.textAlign = "center"; ctx.fillText("地图加载中...", canvas.width/2, canvas.height/2); }
             ctx.font = "14px Arial"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            for (let i = 0; i <= mapW; i += 10) {
-                let posX = padding + i;
-                let is100 = (i % 100 === 0), is50 = (i % 50 === 0 && i % 100 !== 0);
-                ctx.strokeStyle = "#333";
-                let tickLength = is100 ? 10 : (is50 ? 7 : 4);
-                ctx.lineWidth = is100 ? 2 : (is50 ? 1.5 : 1);
-
-                ctx.beginPath(); ctx.moveTo(posX, padding); ctx.lineTo(posX, padding - tickLength); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(posX, padding + mapH); ctx.lineTo(posX, padding + mapH + tickLength); ctx.stroke();
-
-                if (is100) {
-                    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)"; ctx.lineWidth = 1;
-                    ctx.beginPath(); ctx.moveTo(posX, padding); ctx.lineTo(posX, padding + mapH); ctx.stroke();
-                    ctx.fillStyle = "#000"; ctx.fillText(i, posX, padding - 25);
-                }
-            }
-
-            // 绘制Y轴刻度
-            for (let j = 0; j <= mapH; j += 10) {
-                let posY = padding + j;
-                let is100 = (j % 100 === 0), is50 = (j % 50 === 0 && j % 100 !== 0);
-                ctx.strokeStyle = "#333";
-                let tickLength = is100 ? 10 : (is50 ? 7 : 4);
-                ctx.lineWidth = is100 ? 2 : (is50 ? 1.5 : 1);
-
-                ctx.beginPath(); ctx.moveTo(padding, posY); ctx.lineTo(padding - tickLength, posY); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(padding + mapW, posY); ctx.lineTo(padding + mapW + tickLength, posY); ctx.stroke();
-
-                if (is100) {
-                    ctx.strokeStyle = "rgba(0, 0, 0, 0.2)"; ctx.lineWidth = 1;
-                    ctx.beginPath(); ctx.moveTo(padding, posY); ctx.lineTo(padding + mapW, posY); ctx.stroke();
-                    ctx.fillStyle = "#000"; ctx.textAlign = "right"; ctx.fillText(j, padding - 25, posY); ctx.textAlign = "center"; 
-                }
-            }
-
-            ctx.strokeStyle = "#000"; ctx.lineWidth = 2; 
-            ctx.strokeRect(padding, padding, mapW, mapH);
-
-            // 绘制标记点
-            const visibleMarkers = getVisibleMarkers().sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
-            visibleMarkers.forEach(marker => {
-                let pixelX = padding + marker.x; 
-                let pixelY = padding + marker.y;
-
-                if (marker.isSecondary) {
-                    ctx.strokeStyle = "#3498db"; 
-                    ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.arc(pixelX, pixelY, 5, 0, Math.PI * 2); ctx.stroke();
-                    ctx.beginPath(); ctx.moveTo(pixelX - 10, pixelY); ctx.lineTo(pixelX + 10, pixelY); 
-                    ctx.moveTo(pixelX, pixelY - 10); ctx.lineTo(pixelX, pixelY + 10); ctx.stroke();
-                } else {
-                    ctx.fillStyle = "#e74c3c"; 
-                    ctx.beginPath(); ctx.arc(pixelX, pixelY, 5, 0, Math.PI * 2); ctx.fill();
-                    ctx.strokeStyle = "#e74c3c"; 
-                    ctx.lineWidth = 2;
-                    ctx.beginPath(); ctx.moveTo(pixelX - 10, pixelY); ctx.lineTo(pixelX + 10, pixelY); 
-                    ctx.moveTo(pixelX, pixelY - 10); ctx.lineTo(pixelX, pixelY + 10); ctx.stroke();
-                }
-
-                ctx.font = "bold 14px Arial";
-                let lines = parseTextToLines(marker.name);
-                let lineHeight = 16, totalTextHeight = lines.length * lineHeight, maxTextWidth = 0;
-                lines.forEach(line => { maxTextWidth = Math.max(maxTextWidth, ctx.measureText(line).width); });
-
-                let bgPadding = 5, bgWidth = maxTextWidth + bgPadding * 2, bgHeight = totalTextHeight + bgPadding * 2;
-                let bgX, bgY, textCenterX, textCenterY, dir = marker.direction || 'top';
-
-                if (dir === 'top') { bgX = pixelX - bgWidth / 2; bgY = pixelY - 15 - bgHeight; textCenterX = pixelX; textCenterY = bgY + bgHeight / 2; ctx.textAlign = "center"; } 
-                else if (dir === 'bottom') { bgX = pixelX - bgWidth / 2; bgY = pixelY + 15; textCenterX = pixelX; textCenterY = bgY + bgHeight / 2; ctx.textAlign = "center"; } 
-                else if (dir === 'left') { bgX = pixelX - 15 - bgWidth; bgY = pixelY - bgHeight / 2; textCenterX = bgX + bgWidth - bgPadding; textCenterY = pixelY; ctx.textAlign = "right"; } 
-                else if (dir === 'right') { bgX = pixelX + 15; bgY = pixelY - bgHeight / 2; textCenterX = bgX + bgPadding; textCenterY = pixelY; ctx.textAlign = "left"; }
-
-                ctx.fillStyle = marker.isSecondary ? "rgba(41, 128, 185, 0.7)" : "rgba(0, 0, 0, 0.8)"; 
-                ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
-                
-                ctx.fillStyle = "#fff"; ctx.textBaseline = "middle";
-                let startY = textCenterY - (totalTextHeight / 2) + (lineHeight / 2);
-                lines.forEach((line, index) => { ctx.fillText(line, textCenterX, startY + index * lineHeight); });
-            });
-
-            if (hoverPos !== null) {
-                let pixelX = padding + hoverPos.x; let pixelY = padding + hoverPos.y;
-                ctx.save(); ctx.setLineDash([6, 6]); ctx.strokeStyle = "rgba(231, 76, 60, 0.8)"; ctx.lineWidth = 1.5;
-                ctx.beginPath(); ctx.moveTo(pixelX, padding); ctx.lineTo(pixelX, padding + mapH); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(padding, pixelY); ctx.lineTo(padding + mapW, pixelY); ctx.stroke();
-                ctx.restore(); 
-            }
-        }
-
-        function renderList() {
-            pointList.innerHTML = ''; pointCount.innerText = markers.length;
-            if (markers.length === 0) { pointList.innerHTML = '<div style="text-align:center; color:#7f8c8d; margin-top:20px; font-size:14px;">暂无标记点数据</div>'; return; }
-
-            const sortedForList = [...markers].sort((a, b) => (b.zIndex || 0) - (a.zIndex || 0));
-            sortedForList.forEach(marker => {
-                const li = document.createElement('li');
-                if (marker.isSecondary) li.classList.add('is-secondary-item'); 
-                
-                const dirMap = { 'top': '↑', 'bottom': '↓', 'left': '←', 'right': '→' };
-                const dirIcon = dirMap[marker.direction] || '↑', zIdx = marker.zIndex || 1;
-                
-                let hasRemarkIcon = (marker.remark && marker.remark.trim() !== '') ? ' <span title="有备注">📝</span>' : '';
-                if(marker.collectibles && marker.collectibles.length > 0) hasRemarkIcon += ' <span title="有采集">🌿</span>';
-                if(marker.spirits && marker.spirits.length > 0) hasRemarkIcon += ' <span title="有灵宠">🐾</span>';
-
-                let lines = parseTextToLines(marker.name);
-                const displayName = lines.join('<br>'); 
-                const typeText = marker.isSecondary ? '<span style="color:#3498db; font-weight:bold;">次</span>' : '<span style="color:#e74c3c; font-weight:bold;">主</span>';
-
-                li.innerHTML = `
-                    <div class="marker-info">
-                        <div class="marker-title">${displayName}${hasRemarkIcon}</div>
-                        <div class="marker-detail">[${Math.round(marker.x)}, ${Math.round(marker.y)}]</div>
-                        <div class="marker-tags">类型: ${typeText} | 方向: ${dirIcon} | 层级: Lv.${zIdx}</div>
-                    </div>
-                `;
-                pointList.appendChild(li);
-            });
-        }
-
-        // 启动加载外部配置
-        loadExternalData();
-    </script>
-</body>
-</html>
