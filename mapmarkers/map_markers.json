@@ -1,0 +1,225 @@
+[
+  {
+    "x": 235,
+    "y": 241,
+    "name": "朝歌",
+    "direction": "right",
+    "zIndex": 10,
+    "remark": "",
+    "collectibles": [
+      "千年莲子心"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 240,
+    "y": 265,
+    "name": "黑风山",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "杀戮·朱厌掉落“酒曲”",
+    "collectibles": [
+      "风信子"
+    ],
+    "spirits": [
+      "黑风熊族"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 202,
+    "y": 86,
+    "name": "新手村",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "树珍珠",
+      "甘草"
+    ],
+    "spirits": [
+      "仙鹿"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 329,
+    "y": 159,
+    "name": "东海渔场",
+    "direction": "top",
+    "zIndex": 2,
+    "remark": "",
+    "collectibles": [
+      "银色月桂"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 286,
+    "y": 76,
+    "name": "乾元山\n金光洞",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "菊苣"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 326,
+    "y": 231,
+    "name": "狐妖洞",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 107,
+    "y": 111,
+    "name": "九仙山\n桃源洞",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "漱玉花"
+    ],
+    "spirits": [
+      "亡灵"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 65,
+    "y": 198,
+    "name": "毒蛇谷",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "火铃草"
+    ],
+    "spirits": [
+      "青鸾"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 69,
+    "y": 343,
+    "name": "海底沉船",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 191,
+    "y": 283,
+    "name": "龙母塔",
+    "direction": "bottom",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "幽灵菇"
+    ],
+    "spirits": [
+      "土精灵宝宝"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 190,
+    "y": 256,
+    "name": "太华山\n云霄洞",
+    "direction": "left",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "白面神猴"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 251,
+    "y": 359,
+    "name": "绝龙岭",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "千年灵芝"
+    ],
+    "spirits": [
+      "火神"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 233,
+    "y": 224,
+    "name": "药草园",
+    "direction": "top",
+    "zIndex": 5,
+    "remark": "",
+    "collectibles": [
+      "九节菖蒲",
+      "莲藕"
+    ],
+    "spirits": [
+      "药园弓箭手",
+      "莲藕人"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 290,
+    "y": 180,
+    "name": "皇宫入口",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "殷九黎掉落“轰天雷”",
+    "collectibles": [
+      "七七竹"
+    ],
+    "spirits": [
+      "皇族卫士"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 206,
+    "y": 265,
+    "name": "魔礼青",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "彩叶草"
+    ],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 231,
+    "y": 158,
+    "name": "比干",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "比干仙鹤"
+    ],
+    "isSecondary": true
+  }
+]
