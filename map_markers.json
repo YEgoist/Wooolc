@@ -32,15 +32,10 @@
     "y": 86,
     "name": "新手村",
     "direction": "top",
-    "zIndex": 1,
+    "zIndex": 10,
     "remark": "",
-    "collectibles": [
-      "树珍珠",
-      "甘草"
-    ],
-    "spirits": [
-      "仙鹿"
-    ],
+    "collectibles": [],
+    "spirits": [],
     "isSecondary": false
   },
   {
@@ -219,6 +214,35 @@
     "collectibles": [],
     "spirits": [
       "比干仙鹤"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 156,
+    "y": 217,
+    "name": "二仙山\n麻姑洞",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "回春草"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 174,
+    "y": 102,
+    "name": "阴十娘",
+    "direction": "bottom",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "树珍珠",
+      "甘草"
+    ],
+    "spirits": [
+      "仙鹿"
     ],
     "isSecondary": true
   }
