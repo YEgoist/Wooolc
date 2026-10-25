@@ -251,8 +251,8 @@
     "isSecondary": true
   },
   {
-    "x": 81,
-    "y": 295,
+    "x": 99,
+    "y": 300,
     "name": "嗅幻草",
     "direction": "top",
     "zIndex": 1,
@@ -303,9 +303,9 @@
     "isSecondary": false
   },
   {
-    "x": 129,
-    "y": 207,
-    "name": "采集点",
+    "x": 139,
+    "y": 198,
+    "name": "黄飞虎",
     "direction": "top",
     "zIndex": 1,
     "remark": "",
@@ -404,5 +404,16 @@
       "四不象"
     ],
     "isSecondary": true
+  },
+  {
+    "x": 95,
+    "y": 655,
+    "name": "五龙山",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
   }
 ]
