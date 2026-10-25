@@ -57,7 +57,7 @@
     "name": "乾元山\n金光洞",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "矿石Boss",
     "collectibles": [
       "菊苣-赤血丹(灵级)"
     ],
@@ -69,19 +69,21 @@
     "y": 231,
     "name": "狐妖洞",
     "direction": "top",
-    "zIndex": 1,
-    "remark": "",
+    "zIndex": 2,
+    "remark": "比干任务链解锁",
     "collectibles": [],
-    "spirits": [],
+    "spirits": [
+      "狐仙"
+    ],
     "isSecondary": false
   },
   {
     "x": 107,
     "y": 111,
     "name": "九仙山\n桃源洞",
-    "direction": "top",
+    "direction": "left",
     "zIndex": 1,
-    "remark": "",
+    "remark": "充值Boss",
     "collectibles": [
       "漱玉花-百转丹(妖级)"
     ],
@@ -139,7 +141,7 @@
     "name": "太华山\n云霄洞",
     "direction": "left",
     "zIndex": 1,
-    "remark": "",
+    "remark": "材料Boss",
     "collectibles": [],
     "spirits": [
       "白面神猴"
@@ -152,7 +154,7 @@
     "name": "绝龙岭",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "渔魔王",
     "collectibles": [
       "千年灵芝-培元丹(妖级)"
     ],
@@ -183,7 +185,7 @@
     "y": 180,
     "name": "皇宫入口",
     "direction": "top",
-    "zIndex": 1,
+    "zIndex": 2,
     "remark": "殷九黎掉落“轰天雷”",
     "collectibles": [
       "七七竹-冰心丹(妖级)"
@@ -212,7 +214,7 @@
     "name": "比干",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "妖狐洞入场任务",
     "collectibles": [],
     "spirits": [
       "比干仙鹤"
@@ -224,8 +226,8 @@
     "y": 217,
     "name": "二仙山\n麻姑洞",
     "direction": "top",
-    "zIndex": 1,
-    "remark": "",
+    "zIndex": 2,
+    "remark": "充值Boss",
     "collectibles": [
       "回春草-回灵丹(灵级)"
     ],
@@ -301,16 +303,65 @@
     "isSecondary": false
   },
   {
-    "x": 134,
-    "y": 187,
-    "name": "五彩神牛",
+    "x": 129,
+    "y": 207,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "魔力花-补元丹(灵级)",
+      "宁神花-培元丹(灵级)"
+    ],
+    "spirits": [
+      "五彩神牛"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 117,
+    "y": 410,
+    "name": "轩辕坟",
     "direction": "top",
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
     "spirits": [
-      "五彩神牛"
+      "哮天犬"
     ],
+    "isSecondary": false
+  },
+  {
+    "x": 117,
+    "y": 599,
+    "name": "西岐",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 188,
+    "y": 554,
+    "name": "麒麟崖",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 184,
+    "y": 500,
+    "name": "雷震子",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
     "isSecondary": true
   }
 ]

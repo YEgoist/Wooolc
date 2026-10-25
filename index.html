@@ -375,7 +375,6 @@ function loadMarkers() {
         })
         .catch(err => {
             appendStatus('✘ 标记数据加载失败：' + err.message, 'err');
-            appendStatus('提示：直接双击打开 html 时浏览器会拦截 fetch，请用本地服务器（如 VSCode Live Server / python -m http.server）访问。');
             render();
             renderList();
         });
