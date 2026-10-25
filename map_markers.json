@@ -57,7 +57,7 @@
     "name": "乾元山\n金光洞",
     "direction": "top",
     "zIndex": 1,
-    "remark": "矿石Boss",
+    "remark": "矿石魔王Boss",
     "collectibles": [
       "菊苣-赤血丹(灵级)"
     ],
@@ -83,7 +83,7 @@
     "name": "九仙山\n桃源洞",
     "direction": "left",
     "zIndex": 1,
-    "remark": "充值Boss",
+    "remark": "充值魔王Boss",
     "collectibles": [
       "漱玉花-百转丹(妖级)"
     ],
@@ -141,7 +141,7 @@
     "name": "太华山\n云霄洞",
     "direction": "left",
     "zIndex": 1,
-    "remark": "材料Boss",
+    "remark": "材料魔王Boss",
     "collectibles": [],
     "spirits": [
       "白面神猴"
@@ -227,7 +227,7 @@
     "name": "二仙山\n麻姑洞",
     "direction": "top",
     "zIndex": 2,
-    "remark": "充值Boss",
+    "remark": "充值魔王Boss",
     "collectibles": [
       "回春草-回灵丹(灵级)"
     ],
@@ -324,7 +324,7 @@
     "name": "轩辕坟",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "丹药魔王Boss",
     "collectibles": [],
     "spirits": [
       "哮天犬"
@@ -348,7 +348,7 @@
     "name": "麒麟崖",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "充值魔王Boss",
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
@@ -361,6 +361,19 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 124,
+    "y": 467,
+    "name": "杨戬",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "天南星-玲珑丹(灵级)"
+    ],
     "spirits": [],
     "isSecondary": true
   }
