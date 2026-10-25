@@ -347,7 +347,7 @@
     "y": 554,
     "name": "麒麟崖",
     "direction": "top",
-    "zIndex": 1,
+    "zIndex": 2,
     "remark": "充值魔王Boss",
     "collectibles": [],
     "spirits": [],
@@ -360,7 +360,9 @@
     "direction": "top",
     "zIndex": 1,
     "remark": "",
-    "collectibles": [],
+    "collectibles": [
+      "天南星-玲珑丹(灵级)"
+    ],
     "spirits": [],
     "isSecondary": true
   },
@@ -375,6 +377,32 @@
       "天南星-玲珑丹(灵级)"
     ],
     "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 158,
+    "y": 655,
+    "name": "哪吒",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "天南星-玲珑丹(灵级)"
+    ],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 159,
+    "y": 547,
+    "name": "四不象",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "四不象"
+    ],
     "isSecondary": true
   }
 ]
