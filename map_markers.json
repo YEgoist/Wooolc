@@ -45,9 +45,7 @@
     "direction": "top",
     "zIndex": 2,
     "remark": "",
-    "collectibles": [
-      "银色月桂-延寿丹(灵级)"
-    ],
+    "collectibles": [],
     "spirits": [],
     "isSecondary": false
   },
@@ -71,7 +69,9 @@
     "direction": "top",
     "zIndex": 2,
     "remark": "比干任务链解锁",
-    "collectibles": [],
+    "collectibles": [
+      "千年莲子心-补元丹(妖级)"
+    ],
     "spirits": [
       "狐仙"
     ],
@@ -277,13 +277,15 @@
     "isSecondary": true
   },
   {
-    "x": 298,
-    "y": 165,
+    "x": 318,
+    "y": 173,
     "name": "渔魔王",
     "direction": "top",
     "zIndex": 1,
     "remark": "",
-    "collectibles": [],
+    "collectibles": [
+      "银色月桂-延寿丹(灵级)"
+    ],
     "spirits": [
       "火凤"
     ],
@@ -349,7 +351,9 @@
     "direction": "top",
     "zIndex": 2,
     "remark": "充值魔王Boss",
-    "collectibles": [],
+    "collectibles": [
+      "曼陀罗-凝血丹(灵级)"
+    ],
     "spirits": [],
     "isSecondary": false
   },
@@ -409,11 +413,127 @@
     "x": 95,
     "y": 655,
     "name": "五龙山",
+    "direction": "left",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "曼陀罗-凝血丹(灵级)"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 373,
+    "y": 541,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "乳香藤"
+    ],
+    "spirits": [
+      "图腾麒麟"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 601,
+    "y": 389,
+    "name": "玄龟",
     "direction": "top",
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
+    "spirits": [
+      "玄龟"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 488,
+    "y": 254,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "松茸-延寿丹(天级)"
+    ],
+    "spirits": [
+      "白发魔女"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 361,
+    "y": 645,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "劫波莲-增气丹(神级)"
+    ],
+    "spirits": [
+      "封神哪吒"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 606,
+    "y": 479,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "树王圣体菇-回灵丹(神级)"
+    ],
+    "spirits": [
+      "古族狼人"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 373,
+    "y": 72,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "血斛-补元丹(神级)"
+    ],
+    "spirits": [
+      "北海闻仲"
+    ],
+    "isSecondary": true
+  },
+  {
+    "x": 302,
+    "y": 485,
+    "name": "枸杞",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "枸杞-培元丹(地级)"
+    ],
     "spirits": [],
-    "isSecondary": false
+    "isSecondary": true
+  },
+  {
+    "x": 703,
+    "y": 122,
+    "name": "清心",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "清心-补元丹(天级)"
+    ],
+    "spirits": [],
+    "isSecondary": true
   }
 ]
