@@ -66,7 +66,7 @@
     flex-wrap:wrap;
   }
 
-  /* 尺寸设置面板：默认隐藏 */
+  /* 设置面板：默认隐藏 */
   .size-panel{
     display:flex;
     align-items:center;
@@ -80,6 +80,7 @@
     transition:opacity .15s;
   }
   .size-panel.hidden{display:none}
+
   .size-field{
     display:flex;
     align-items:center;
@@ -107,6 +108,44 @@
   .size-field input:focus{outline:none;border-color:var(--accent);background:var(--accent-soft)}
   .size-field input::placeholder{color:var(--muted);opacity:.65;font-size:12px}
 
+  /* 紧凑模式开关 */
+  .switch-field{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--muted);
+    cursor:pointer;
+    user-select:none;
+    white-space:nowrap;
+  }
+  .switch-input{
+    appearance:none;
+    -webkit-appearance:none;
+    width:36px;height:20px;
+    border-radius:10px;
+    background:var(--border);
+    position:relative;
+    cursor:pointer;
+    margin:0;
+    padding:0;
+    border:none;
+    flex:none;
+    transition:background .2s;
+  }
+  .switch-input::after{
+    content:'';
+    position:absolute;
+    top:2px;left:2px;
+    width:16px;height:16px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.2);
+    transition:transform .2s;
+  }
+  .switch-input:checked{background:var(--accent)}
+  .switch-input:checked::after{transform:translateX(16px)}
+
   .add-btn{
     display:inline-flex;align-items:center;gap:6px;
     height:40px;padding:0 18px;border-radius:20px;
@@ -120,7 +159,6 @@
   .add-btn:active{transform:scale(.96)}
   .add-btn svg{width:18px;height:18px;fill:currentColor}
 
-  /* 尺寸切换按钮 */
   .size-toggle{
     width:40px;height:40px;
     border-radius:12px;
@@ -136,7 +174,7 @@
   .size-toggle.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
   .size-toggle svg{width:18px;height:18px;fill:currentColor}
 
-  /* ---------- 网格（可限宽限高 + 滚动） ---------- */
+  /* ---------- 网格 ---------- */
   .grid{
     display:grid;
     grid-template-columns:repeat(auto-fill, minmax(min(300px, 100%), 1fr));
@@ -206,7 +244,6 @@
     flex-wrap:wrap;
   }
 
-  /* 时间设置区：始终占位，运行中仅悬停可见 */
   .setters{
     display:flex;
     align-items:center;
@@ -266,12 +303,67 @@
   .btn-del{width:28px;height:28px;border-color:transparent;color:var(--muted)}
   .btn-del:hover{color:var(--danger);border-color:var(--danger);background:transparent}
 
+  /* 展开/收起时间设置按钮（仅紧凑模式可见） */
+  .btn-fold{
+    display:none;
+    width:28px;height:28px;
+    border-color:transparent;
+    color:var(--muted);
+  }
+  .btn-fold:hover{color:var(--accent);border-color:var(--accent);background:transparent}
+  .btn-fold .i-fold-up{display:none}
+  .card.expanded .btn-fold .i-fold-down{display:none}
+  .card.expanded .btn-fold .i-fold-up{display:block}
+
   .btn-play .i-pause{display:none}
   .btn-play.running .i-play{display:none}
   .btn-play.running .i-pause{display:block}
   .btn-play.running{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
 
-  /* 触屏等无悬停能力的设备：始终显示，避免无法操作 */
+  /* ==================== 紧凑模式 ==================== */
+  .grid.compact .btn-fold{display:grid}
+
+  .grid.compact .card{
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    grid-template-areas:
+      "head    head    head"
+      "display play    reset";
+    gap:6px 8px;
+    align-items:center;
+    padding:10px 12px;
+  }
+  .grid.compact .card.expanded{
+    grid-template-areas:
+      "head    head    head"
+      "display play    reset"
+      "setters setters setters";
+  }
+  .grid.compact .card .card-head{grid-area:head}
+  .grid.compact .card .display{
+    grid-area:display;
+    text-align:center;
+    padding:0 4px;
+    font-size:1.75rem;
+    line-height:1.2;
+  }
+  .grid.compact .card .card-foot{display:contents}
+  .grid.compact .card .actions{display:contents}
+  .grid.compact .card .btn-play{grid-area:play}
+  .grid.compact .card .btn-reset{grid-area:reset}
+  .grid.compact .card .setters{
+    grid-area:setters;
+    display:none;
+    min-height:32px;
+    padding-top:2px;
+  }
+  .grid.compact .card.expanded .setters{display:flex}
+
+  /* 紧凑模式下输入框展开即显示，不做悬停隐藏 */
+  .grid.compact .card.running .setters .field{opacity:1;visibility:visible}
+  .grid.compact .card.running .setters:hover{background:transparent}
+
+  /* 触屏等无悬停能力的设备：始终显示 */
   @media (hover:none){
     .card.running .setters .field{opacity:1;visibility:visible}
     .card.running .setters:hover{background:transparent}
@@ -296,6 +388,7 @@
     .app{padding:16px 12px 60px}
     .toolbar{margin-bottom:14px}
     .display{font-size:1.95rem;padding:6px 0 10px}
+    .grid.compact .card .display{font-size:1.5rem}
   }
 </style>
 </head>
@@ -304,7 +397,7 @@
 <div class="app">
   <div class="toolbar">
     <div class="toolbar-left">
-      <button id="sizeToggle" class="size-toggle" title="容器尺寸设置" aria-label="容器尺寸设置">
+      <button id="sizeToggle" class="size-toggle" title="设置" aria-label="设置">
         <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
       </button>
 
@@ -318,6 +411,10 @@
           <span>高</span>
           <input id="maxH" type="number" inputmode="numeric" min="0" max="4000" placeholder="不限" aria-label="容器最大高度">
           <span>px</span>
+        </label>
+        <label class="switch-field">
+          <span>紧凑</span>
+          <input id="compactToggle" class="switch-input" type="checkbox">
         </label>
       </div>
     </div>
@@ -337,6 +434,10 @@
   <section class="card">
     <div class="card-head">
       <input class="name" type="text" maxlength="30" placeholder="名称" aria-label="计时器名称">
+      <button class="icon-btn btn-fold" title="展开时间设置" aria-label="展开或收起时间设置">
+        <svg class="i-fold-down" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+        <svg class="i-fold-up" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5z"/></svg>
+      </button>
       <button class="icon-btn btn-del" title="删除" aria-label="删除">
         <svg viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
       </button>
@@ -377,29 +478,30 @@
 (function () {
   'use strict';
 
-  var grid     = document.getElementById('grid');
-  var emptyEl  = document.getElementById('empty');
-  var tpl      = document.getElementById('tpl');
-  var addBtn   = document.getElementById('addBtn');
-  var maxWIn   = document.getElementById('maxW');
-  var maxHIn   = document.getElementById('maxH');
-  var sizeToggle = document.getElementById('sizeToggle');
-  var sizePanel  = document.getElementById('sizePanel');
+  var grid         = document.getElementById('grid');
+  var emptyEl      = document.getElementById('empty');
+  var tpl          = document.getElementById('tpl');
+  var addBtn       = document.getElementById('addBtn');
+  var maxWIn       = document.getElementById('maxW');
+  var maxHIn       = document.getElementById('maxH');
+  var sizeToggle   = document.getElementById('sizeToggle');
+  var sizePanel    = document.getElementById('sizePanel');
+  var compactInput = document.getElementById('compactToggle');
 
   var timers = [];
   var rafId  = null;
   var seq    = 0;
 
-  var DEFAULT_SEC = 20*60;
-  var SIZE_KEY = 'countdown-container-size';
+  var DEFAULT_SEC  = 20*60;
+  var SIZE_KEY     = 'countdown-container-size';
+  var COMPACT_KEY  = 'countdown-compact';
 
-  /* ============ 尺寸面板显隐 ============ */
+  /* ============ 设置面板显隐 ============ */
 
   function toggleSizePanel() {
     var hidden = sizePanel.classList.toggle('hidden');
     sizeToggle.classList.toggle('active', !hidden);
   }
-
   sizeToggle.addEventListener('click', toggleSizePanel);
 
   /* ============ 容器尺寸控制 ============ */
@@ -407,10 +509,8 @@
   function applyMaxSize() {
     var w = parseFloat(maxWIn.value);
     var h = parseFloat(maxHIn.value);
-
     grid.style.maxWidth  = (w > 0) ? w + 'px' : '';
     grid.style.maxHeight = (h > 0) ? h + 'px' : '';
-
     try {
       localStorage.setItem(SIZE_KEY, JSON.stringify({
         w: w > 0 ? w : '',
@@ -430,6 +530,24 @@
 
   maxWIn.addEventListener('input', applyMaxSize);
   maxHIn.addEventListener('input', applyMaxSize);
+
+  /* ============ 紧凑模式 ============ */
+
+  function applyCompact(on) {
+    grid.classList.toggle('compact', on);
+    compactInput.checked = on;
+    try { localStorage.setItem(COMPACT_KEY, on ? '1' : '0'); } catch (e) { /* 忽略 */ }
+  }
+
+  compactInput.addEventListener('change', function () {
+    applyCompact(compactInput.checked);
+  });
+
+  function restoreCompact() {
+    var on = false;
+    try { on = localStorage.getItem(COMPACT_KEY) === '1'; } catch (e) { /* 忽略 */ }
+    applyCompact(on);
+  }
 
   /* ============ 工具函数 ============ */
 
@@ -523,7 +641,6 @@
 
   function resetTimer(t) {
     t.durationMs = readInputs(t);
-
     if (t.running) {
       t.endAt = performance.now() + t.durationMs;
       ensureLoop();
@@ -535,7 +652,6 @@
 
   function applyInput(t) {
     t.durationMs = readInputs(t);
-
     if (t.running) {
       t.endAt = performance.now() + t.durationMs;
       ensureLoop();
@@ -580,6 +696,7 @@
     el.play    = node.querySelector('.btn-play');
     el.reset   = node.querySelector('.btn-reset');
     el.del     = node.querySelector('.btn-del');
+    el.fold    = node.querySelector('.btn-fold');
 
     el.name.value = '计时器 ' + seq;
     t.durationMs = initialSec * 1000;
@@ -591,6 +708,11 @@
     [el.h, el.m, el.s].forEach(function (inp) {
       inp.addEventListener('input', function () { applyInput(t); });
       inp.addEventListener('focus', function () { inp.select(); });
+    });
+
+    el.fold.addEventListener('click', function () {
+      var expanded = el.card.classList.toggle('expanded');
+      el.fold.title = expanded ? '收起时间设置' : '展开时间设置';
     });
 
     el.play.addEventListener('click', function () { togglePlay(t); });
@@ -613,6 +735,7 @@
   addBtn.addEventListener('click', addTimer);
 
   restoreMaxSize();
+  restoreCompact();
   addTimer();
   updateEmpty();
 
