@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>倒计时</title>
+<title>计时器</title>
 <style>
   :root{
     --bg:#f4f6fa;
@@ -107,6 +107,21 @@
   .size-field input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .size-field input:focus{outline:none;border-color:var(--accent);background:var(--accent-soft)}
   .size-field input::placeholder{color:var(--muted);opacity:.65;font-size:12px}
+
+  .size-divider{
+    width:1px;height:18px;
+    background:var(--border);
+    align-self:center;
+  }
+
+  /* 默认时长输入框 */
+  .def-input{
+    width:32px !important;
+    height:28px !important;
+    border-radius:8px !important;
+    font-size:12px !important;
+    padding:0 !important;
+  }
 
   /* 紧凑模式开关 */
   .switch-field{
@@ -416,6 +431,16 @@
           <span>紧凑</span>
           <input id="compactToggle" class="switch-input" type="checkbox">
         </label>
+        <span class="size-divider"></span>
+        <span class="size-field" title="新计时器默认时长">
+          <span>默认</span>
+          <input id="defH" class="def-input" type="number" inputmode="numeric" min="0" max="999" placeholder="0" aria-label="默认小时">
+          <span>时</span>
+          <input id="defM" class="def-input" type="number" inputmode="numeric" min="0" max="999" placeholder="0" aria-label="默认分钟">
+          <span>分</span>
+          <input id="defS" class="def-input" type="number" inputmode="numeric" min="0" max="999" placeholder="0" aria-label="默认秒">
+          <span>秒</span>
+        </span>
       </div>
     </div>
 
@@ -487,14 +512,64 @@
   var sizeToggle   = document.getElementById('sizeToggle');
   var sizePanel    = document.getElementById('sizePanel');
   var compactInput = document.getElementById('compactToggle');
+  var defH         = document.getElementById('defH');
+  var defM         = document.getElementById('defM');
+  var defS         = document.getElementById('defS');
 
   var timers = [];
   var rafId  = null;
   var seq    = 0;
 
-  var DEFAULT_SEC  = 20*60;
-  var SIZE_KEY     = 'countdown-container-size';
-  var COMPACT_KEY  = 'countdown-compact';
+  var defaultSec = 300;                    // 新计时器默认时长（秒）
+  var STORE_KEY  = 'countdown-state-v3';   // 仅记忆初始设置
+  var SIZE_KEY   = 'countdown-container-size';
+  var COMPACT_KEY= 'countdown-compact';
+
+  /* ============ 通用工具 ============ */
+
+  function clampInt(v, min, max) {
+    var n = parseInt(v, 10);
+    if (isNaN(n)) n = 0;
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function fmt(ms) {
+    var neg = ms < 0;
+    var total = Math.ceil(Math.abs(ms) / 1000);
+    return (neg ? '-' : '') +
+      pad(Math.floor(total / 3600)) + ':' +
+      pad(Math.floor((total % 3600) / 60)) + ':' +
+      pad(total % 60);
+  }
+
+  function debounce(fn, wait) {
+    var id = null;
+    return function () {
+      clearTimeout(id);
+      id = setTimeout(fn, wait);
+    };
+  }
+
+  function paint(t, ms) {
+    var el = t.el;
+    var text = fmt(ms);
+    if (text !== t.lastText) {
+      el.display.textContent = text;
+      t.lastText = text;
+    }
+    var state = ms < 0 ? 'neg' : (ms > 0 && ms <= 10000 ? 'warn' : '');
+    if (state !== t.lastState) {
+      el.display.classList.toggle('neg', state === 'neg');
+      el.display.classList.toggle('warn', state === 'warn');
+      t.lastState = state;
+    }
+  }
+
+  function updateEmpty() {
+    emptyEl.style.display = timers.length ? 'none' : '';
+  }
 
   /* ============ 设置面板显隐 ============ */
 
@@ -504,7 +579,7 @@
   }
   sizeToggle.addEventListener('click', toggleSizePanel);
 
-  /* ============ 容器尺寸控制 ============ */
+  /* ============ 容器尺寸 ============ */
 
   function applyMaxSize() {
     var w = parseFloat(maxWIn.value);
@@ -549,37 +624,54 @@
     applyCompact(on);
   }
 
-  /* ============ 工具函数 ============ */
+  /* ============ 默认时长设置 ============ */
 
-  function pad(n) { return n < 10 ? '0' + n : '' + n; }
-
-  function fmt(ms) {
-    var neg = ms < 0;
-    var total = Math.ceil(Math.abs(ms) / 1000);
-    return (neg ? '-' : '') +
-      pad(Math.floor(total / 3600)) + ':' +
-      pad(Math.floor((total % 3600) / 60)) + ':' +
-      pad(total % 60);
+  function writeDefaultInputs(sec) {
+    defH.value = Math.floor(sec / 3600);
+    defM.value = Math.floor((sec % 3600) / 60);
+    defS.value = sec % 60;
   }
 
-  function paint(t, ms) {
-    var el = t.el;
-    var text = fmt(ms);
-    if (text !== t.lastText) {
-      el.display.textContent = text;
-      t.lastText = text;
+  function onDefaultInput() {
+    var h = clampInt(defH.value, 0, 999);
+    var m = clampInt(defM.value, 0, 999);
+    var s = clampInt(defS.value, 0, 999);
+    defaultSec = h * 3600 + m * 60 + s;
+    saveDebounced();
+  }
+
+  defH.addEventListener('input', onDefaultInput);
+  defM.addEventListener('input', onDefaultInput);
+  defS.addEventListener('input', onDefaultInput);
+  [defH, defM, defS].forEach(function (inp) {
+    inp.addEventListener('focus', function () { inp.select(); });
+  });
+
+  /* ============ 本地持久化（仅初始设置） ============ */
+
+  function serializeTimers() {
+    var out = [];
+    for (var i = 0; i < timers.length; i++) {
+      var t = timers[i];
+      out.push({
+        name: t.el.name.value,
+        durationMs: t.durationMs
+      });
     }
-    var state = ms < 0 ? 'neg' : (ms > 0 && ms <= 10000 ? 'warn' : '');
-    if (state !== t.lastState) {
-      el.display.classList.toggle('neg', state === 'neg');
-      el.display.classList.toggle('warn', state === 'warn');
-      t.lastState = state;
-    }
+    return out;
   }
 
-  function updateEmpty() {
-    emptyEl.style.display = timers.length ? 'none' : '';
+  function saveTimers() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        timers: serializeTimers(),
+        defaultSec: defaultSec,
+        seq: seq
+      }));
+    } catch (e) { /* 忽略（隐私模式/超配额） */ }
   }
+
+  var saveDebounced = debounce(saveTimers, 300);
 
   /* ============ 主循环 ============ */
 
@@ -605,14 +697,14 @@
 
   function readInputs(t) {
     var el = t.el;
-    var h = Math.max(0, Math.min(999, parseInt(el.h.value, 10) || 0));
-    var m = Math.max(0, Math.min(999, parseInt(el.m.value, 10) || 0));
-    var s = Math.max(0, Math.min(999, parseInt(el.s.value, 10) || 0));
+    var h = clampInt(el.h.value, 0, 999);
+    var m = clampInt(el.m.value, 0, 999);
+    var s = clampInt(el.s.value, 0, 999);
     return ((h * 3600) + (m * 60) + s) * 1000;
   }
 
   function writeInputs(t, totalMs) {
-    var total = Math.round(totalMs / 1000);
+    var total = Math.max(0, Math.round(totalMs / 1000));
     t.el.h.value = Math.floor(total / 3600);
     t.el.m.value = Math.floor((total % 3600) / 60);
     t.el.s.value = total % 60;
@@ -648,6 +740,7 @@
       t.remainingMs = t.durationMs;
       paint(t, t.remainingMs);
     }
+    saveTimers();
   }
 
   function applyInput(t) {
@@ -659,6 +752,7 @@
       t.remainingMs = t.durationMs;
       paint(t, t.remainingMs);
     }
+    saveDebounced();
   }
 
   function removeTimer(t) {
@@ -667,11 +761,13 @@
     timers.splice(i, 1);
     if (t.el.card.parentNode) t.el.card.parentNode.removeChild(t.el.card);
     updateEmpty();
+    saveTimers();
   }
 
   /* ============ 创建计时器 ============ */
 
-  function createTimer(initialSec) {
+  function createTimer(initialSec, opts) {
+    opts = opts || {};
     seq += 1;
 
     var node = tpl.content.firstElementChild.cloneNode(true);
@@ -698,23 +794,37 @@
     el.del     = node.querySelector('.btn-del');
     el.fold    = node.querySelector('.btn-fold');
 
-    el.name.value = '计时器 ' + seq;
-    t.durationMs = initialSec * 1000;
+    /* --- 初始状态 --- */
+    el.name.value = (typeof opts.name === 'string')
+      ? opts.name
+      : ('计时器 ' + seq);
+
+    t.durationMs = (typeof opts.durationMs === 'number')
+      ? opts.durationMs
+      : initialSec * 1000;
+
+    // 不恢复运行状态：总是以设定时长作为初始剩余时间
     t.remainingMs = t.durationMs;
+
     writeInputs(t, t.durationMs);
 
+    /* --- 名称（改完防抖保存） --- */
     el.name.addEventListener('focus', function () { el.name.select(); });
+    el.name.addEventListener('input', saveDebounced);
 
+    /* --- 时间设置（运行中也可编辑，不打断计时） --- */
     [el.h, el.m, el.s].forEach(function (inp) {
       inp.addEventListener('input', function () { applyInput(t); });
       inp.addEventListener('focus', function () { inp.select(); });
     });
 
+    /* --- 展开/收起时间设置（紧凑模式） --- */
     el.fold.addEventListener('click', function () {
       var expanded = el.card.classList.toggle('expanded');
       el.fold.title = expanded ? '收起时间设置' : '展开时间设置';
     });
 
+    /* --- 按钮 --- */
     el.play.addEventListener('click', function () { togglePlay(t); });
     el.reset.addEventListener('click', function () { resetTimer(t); });
     el.del.addEventListener('click', function () { removeTimer(t); });
@@ -723,12 +833,55 @@
   }
 
   function addTimer() {
-    var t = createTimer(DEFAULT_SEC);
+    var t = createTimer(defaultSec);
     timers.push(t);
     grid.appendChild(t.el.card);
     paint(t, t.remainingMs);
     updateEmpty();
+    saveTimers();
   }
+
+  /* ============ 从本地恢复（仅初始设置） ============ */
+
+  function restoreState() {
+    var data = null;
+    try { data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { data = null; }
+
+    // 首次访问：给一个默认计时器
+    if (!data || !Array.isArray(data.timers)) {
+      addTimer();
+      return;
+    }
+
+    // 恢复默认时长
+    if (typeof data.defaultSec === 'number' && data.defaultSec >= 0) {
+      defaultSec = data.defaultSec;
+      writeDefaultInputs(defaultSec);
+    }
+
+    // 恢复序号
+    if (typeof data.seq === 'number' && data.seq > 0) seq = data.seq;
+
+    // 用户可能把计时器全删了，尊重这个状态
+    if (data.timers.length === 0) {
+      updateEmpty();
+      return;
+    }
+
+    data.timers.forEach(function (item) {
+      var t = createTimer(0, {
+        name: item.name,
+        durationMs: (typeof item.durationMs === 'number') ? item.durationMs : 0
+      });
+      timers.push(t);
+      grid.appendChild(t.el.card);
+      paint(t, t.remainingMs);
+    });
+
+    updateEmpty();
+  }
+
+  window.addEventListener('pagehide', saveTimers);
 
   /* ============ 初始化 ============ */
 
@@ -736,8 +889,7 @@
 
   restoreMaxSize();
   restoreCompact();
-  addTimer();
-  updateEmpty();
+  restoreState();
 
 })();
 </script>
