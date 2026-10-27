@@ -70,7 +70,7 @@
     "zIndex": 2,
     "remark": "比干任务链解锁",
     "collectibles": [
-      "千年莲子心-补元丹(妖级)"
+      "芦荟-百转丹(灵级)"
     ],
     "spirits": [
       "狐仙"
@@ -552,11 +552,13 @@
   {
     "x": 95,
     "y": 602,
-    "name": "姬发\n西岐坟场",
+    "name": "西岐坟场",
     "direction": "left",
     "zIndex": 1,
     "remark": "",
-    "collectibles": [],
+    "collectibles": [
+      "蒲黄"
+    ],
     "spirits": [
       "死去的冤魂"
     ],
