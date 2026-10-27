@@ -415,7 +415,7 @@
     "name": "五龙山",
     "direction": "left",
     "zIndex": 1,
-    "remark": "",
+    "remark": "图纸魔王Boss",
     "collectibles": [
       "曼陀罗-凝血丹(灵级)"
     ],
@@ -557,7 +557,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "蒲黄"
+      "蒲黄-增气丹(地级)"
     ],
     "spirits": [
       "死去的冤魂"
@@ -598,5 +598,82 @@
       "旱魃化身"
     ],
     "isSecondary": true
+  },
+  {
+    "x": 243,
+    "y": 510,
+    "name": "封魔之地",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 236,
+    "y": 450,
+    "name": "芦洲",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 315,
+    "y": 412,
+    "name": "部洲",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 421,
+    "y": 456,
+    "name": "南蛮",
+    "direction": "top",
+    "zIndex": 10,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 306,
+    "y": 487,
+    "name": "试炼之地",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 302,
+    "y": 659,
+    "name": "冀州宝库",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 316,
+    "y": 677,
+    "name": "神洲",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
   }
 ]
