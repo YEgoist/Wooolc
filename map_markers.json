@@ -544,7 +544,9 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
-    "spirits": [],
+    "spirits": [
+      "冰火双头鸟"
+    ],
     "isSecondary": false
   },
   {

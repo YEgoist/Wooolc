@@ -66,7 +66,6 @@
     flex-wrap:wrap;
   }
 
-  /* 设置面板：默认隐藏 */
   .size-panel{
     display:flex;
     align-items:center;
@@ -114,7 +113,6 @@
     align-self:center;
   }
 
-  /* 默认时长输入框 */
   .def-input{
     width:32px !important;
     height:28px !important;
@@ -123,7 +121,6 @@
     padding:0 !important;
   }
 
-  /* 紧凑模式开关 */
   .switch-field{
     display:flex;
     align-items:center;
@@ -217,6 +214,13 @@
     flex-direction:column;
     gap:4px;
     transition:background .2s, border-color .2s;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
+  }
+  .card input{
+    user-select:text;
+    -webkit-user-select:text;
   }
 
   .card-head{display:flex;align-items:center;gap:6px}
@@ -318,7 +322,6 @@
   .btn-del{width:28px;height:28px;border-color:transparent;color:var(--muted)}
   .btn-del:hover{color:var(--danger);border-color:var(--danger);background:transparent}
 
-  /* 展开/收起时间设置按钮（仅紧凑模式可见） */
   .btn-fold{
     display:none;
     width:28px;height:28px;
@@ -374,14 +377,36 @@
   }
   .grid.compact .card.expanded .setters{display:flex}
 
-  /* 紧凑模式下输入框展开即显示，不做悬停隐藏 */
   .grid.compact .card.running .setters .field{opacity:1;visibility:visible}
   .grid.compact .card.running .setters:hover{background:transparent}
 
-  /* 触屏等无悬停能力的设备：始终显示 */
   @media (hover:none){
     .card.running .setters .field{opacity:1;visibility:visible}
     .card.running .setters:hover{background:transparent}
+  }
+
+  /* ==================== 拖拽排序 ==================== */
+  .card.dragging{
+    pointer-events:none;
+    opacity:.95;
+    box-shadow:0 12px 40px rgba(0,0,0,.18);
+    transition:none !important;
+    cursor:grabbing;
+    will-change:left, top;
+  }
+  .drag-placeholder{
+    border:2px dashed var(--accent);
+    border-radius:var(--radius);
+    background:var(--accent-soft);
+    opacity:.5;
+    pointer-events:none;
+    box-sizing:border-box;
+    transition:opacity .12s;
+  }
+  body.dragging-active{
+    cursor:grabbing;
+    user-select:none;
+    -webkit-user-select:none;
   }
 
   /* ---------- 空状态 ---------- */
@@ -520,8 +545,8 @@
   var rafId  = null;
   var seq    = 0;
 
-  var defaultSec = 300;                    // 新计时器默认时长（秒）
-  var STORE_KEY  = 'countdown-state-v3';   // 仅记忆初始设置
+  var defaultSec = 300;
+  var STORE_KEY  = 'countdown-state-v3';
   var SIZE_KEY   = 'countdown-container-size';
   var COMPACT_KEY= 'countdown-compact';
 
@@ -647,7 +672,7 @@
     inp.addEventListener('focus', function () { inp.select(); });
   });
 
-  /* ============ 本地持久化（仅初始设置） ============ */
+  /* ============ 本地持久化（仅初始设置 + 顺序） ============ */
 
   function serializeTimers() {
     var out = [];
@@ -668,7 +693,7 @@
         defaultSec: defaultSec,
         seq: seq
       }));
-    } catch (e) { /* 忽略（隐私模式/超配额） */ }
+    } catch (e) { /* 忽略 */ }
   }
 
   var saveDebounced = debounce(saveTimers, 300);
@@ -764,6 +789,219 @@
     saveTimers();
   }
 
+  /* ============ 拖拽排序 ============ */
+
+  var drag = {
+    card: null,          // timer 对象
+    pending: false,      // 长按等待中
+    active: false,       // 拖拽已激活
+    timer: null,         // 长按定时器
+    startX: 0, startY: 0,
+    offsetX: 0, offsetY: 0,
+    lastX: 0, lastY: 0,
+    pointerId: null,
+    placeholder: null,
+    justDragged: false
+  };
+
+  var LONG_PRESS_MS = 500;
+  var MOVE_THRESHOLD = 8;
+
+  function onCardPointerDown(e, t) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.target.closest('input, button, textarea, select, a, label')) return;
+    if (drag.active || drag.pending) return;
+
+    drag.card = t;
+    drag.pending = true;
+    drag.active = false;
+    drag.startX = e.clientX;
+    drag.startY = e.clientY;
+    drag.lastX = e.clientX;
+    drag.lastY = e.clientY;
+    drag.pointerId = e.pointerId;
+
+    drag.timer = setTimeout(function () {
+      if (drag.pending) activateDrag();
+    }, LONG_PRESS_MS);
+
+    document.addEventListener('pointermove', onDocPointerMove);
+    document.addEventListener('pointerup', onDocPointerUp);
+    document.addEventListener('pointercancel', onDocPointerUp);
+  }
+
+  function onDocPointerMove(e) {
+    if (e.pointerId !== drag.pointerId) return;
+
+    drag.lastX = e.clientX;
+    drag.lastY = e.clientY;
+
+    if (drag.pending) {
+      var dx = e.clientX - drag.startX;
+      var dy = e.clientY - drag.startY;
+      if (Math.sqrt(dx * dx + dy * dy) > MOVE_THRESHOLD) cancelPendingDrag();
+      return;
+    }
+
+    if (drag.active) {
+      if (e.cancelable) e.preventDefault();
+      updateDragPosition();
+    }
+  }
+
+  function onDocPointerUp(e) {
+    if (e.pointerId !== drag.pointerId) return;
+
+    if (drag.pending) {
+      cancelPendingDrag();
+    } else if (drag.active) {
+      endDrag();
+    }
+  }
+
+  function cancelPendingDrag() {
+    clearTimeout(drag.timer);
+    drag.timer = null;
+    drag.pending = false;
+    drag.card = null;
+    drag.pointerId = null;
+    document.removeEventListener('pointermove', onDocPointerMove);
+    document.removeEventListener('pointerup', onDocPointerUp);
+    document.removeEventListener('pointercancel', onDocPointerUp);
+  }
+
+  function activateDrag() {
+    if (!drag.card || !drag.pending) return;
+
+    var card = drag.card.el.card;
+    var rect = card.getBoundingClientRect();
+
+    drag.offsetX = drag.lastX - rect.left;
+    drag.offsetY = drag.lastY - rect.top;
+
+    /* 占位元素 */
+    var ph = document.createElement('div');
+    ph.className = 'drag-placeholder';
+    ph.style.height = rect.height + 'px';
+    card.parentNode.insertBefore(ph, card);
+    drag.placeholder = ph;
+
+    /* 卡片 fixed 跟随 */
+    card.classList.add('dragging');
+    card.style.position = 'fixed';
+    card.style.left = rect.left + 'px';
+    card.style.top = rect.top + 'px';
+    card.style.width = rect.width + 'px';
+    card.style.height = rect.height + 'px';
+    card.style.margin = '0';
+    card.style.zIndex = '1000';
+
+    drag.pending = false;
+    drag.active = true;
+    drag.justDragged = true;
+
+    document.body.classList.add('dragging-active');
+  }
+
+  function updateDragPosition() {
+    if (!drag.active) return;
+
+    var card = drag.card.el.card;
+    var x = drag.lastX - drag.offsetX;
+    var y = drag.lastY - drag.offsetY;
+
+    card.style.left = x + 'px';
+    card.style.top = y + 'px';
+
+    /* 用指针位置判断目标卡片 */
+    var el = document.elementFromPoint(drag.lastX, drag.lastY);
+    var targetCard = el ? el.closest('.card') : null;
+    if (!targetCard || targetCard === card) return;
+    if (!targetCard.classList.contains('card')) return;
+
+    var ph = drag.placeholder;
+    if (!ph) return;
+
+    var targetRect = targetCard.getBoundingClientRect();
+    var midY = targetRect.top + targetRect.height / 2;
+    var shouldInsertBefore = drag.lastY < midY;
+
+    if (shouldInsertBefore) {
+      if (ph.nextElementSibling === targetCard) return;
+      targetCard.parentNode.insertBefore(ph, targetCard);
+    } else {
+      if (ph.previousElementSibling === targetCard) return;
+      targetCard.parentNode.insertBefore(ph, targetCard.nextElementSibling);
+    }
+  }
+
+  function endDrag() {
+    if (!drag.active) return;
+
+    var card = drag.card.el.card;
+    var ph = drag.placeholder;
+
+    card.classList.remove('dragging');
+    card.style.position = '';
+    card.style.left = '';
+    card.style.top = '';
+    card.style.width = '';
+    card.style.height = '';
+    card.style.margin = '';
+    card.style.zIndex = '';
+
+    if (ph && ph.parentNode) {
+      ph.parentNode.insertBefore(card, ph);
+      ph.parentNode.removeChild(ph);
+    }
+
+    document.body.classList.remove('dragging-active');
+
+    drag.active = false;
+    drag.card = null;
+    drag.placeholder = null;
+    drag.pointerId = null;
+
+    document.removeEventListener('pointermove', onDocPointerMove);
+    document.removeEventListener('pointerup', onDocPointerUp);
+    document.removeEventListener('pointercancel', onDocPointerUp);
+
+    reorderTimers();
+    saveTimers();
+
+    setTimeout(function () { drag.justDragged = false; }, 0);
+  }
+
+  function reorderTimers() {
+    var cards = Array.prototype.slice.call(grid.children).filter(function (el) {
+      return el.classList && el.classList.contains('card');
+    });
+
+    var newTimers = [];
+    cards.forEach(function (card) {
+      for (var i = 0; i < timers.length; i++) {
+        if (timers[i].el.card === card) {
+          newTimers.push(timers[i]);
+          break;
+        }
+      }
+    });
+
+    timers = newTimers;
+  }
+
+  /* 拖拽后拦截误触 click */
+  grid.addEventListener('click', function (e) {
+    if (drag.justDragged) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }, true);
+
+  document.addEventListener('contextmenu', function (e) {
+    if (drag.active) e.preventDefault();
+  });
+
   /* ============ 创建计时器 ============ */
 
   function createTimer(initialSec, opts) {
@@ -794,7 +1032,6 @@
     el.del     = node.querySelector('.btn-del');
     el.fold    = node.querySelector('.btn-fold');
 
-    /* --- 初始状态 --- */
     el.name.value = (typeof opts.name === 'string')
       ? opts.name
       : ('计时器 ' + seq);
@@ -803,31 +1040,31 @@
       ? opts.durationMs
       : initialSec * 1000;
 
-    // 不恢复运行状态：总是以设定时长作为初始剩余时间
     t.remainingMs = t.durationMs;
 
     writeInputs(t, t.durationMs);
 
-    /* --- 名称（改完防抖保存） --- */
     el.name.addEventListener('focus', function () { el.name.select(); });
     el.name.addEventListener('input', saveDebounced);
 
-    /* --- 时间设置（运行中也可编辑，不打断计时） --- */
     [el.h, el.m, el.s].forEach(function (inp) {
       inp.addEventListener('input', function () { applyInput(t); });
       inp.addEventListener('focus', function () { inp.select(); });
     });
 
-    /* --- 展开/收起时间设置（紧凑模式） --- */
     el.fold.addEventListener('click', function () {
       var expanded = el.card.classList.toggle('expanded');
       el.fold.title = expanded ? '收起时间设置' : '展开时间设置';
     });
 
-    /* --- 按钮 --- */
     el.play.addEventListener('click', function () { togglePlay(t); });
     el.reset.addEventListener('click', function () { resetTimer(t); });
     el.del.addEventListener('click', function () { removeTimer(t); });
+
+    /* 拖拽排序 */
+    el.card.addEventListener('pointerdown', function (e) {
+      onCardPointerDown(e, t);
+    });
 
     return t;
   }
@@ -847,22 +1084,18 @@
     var data = null;
     try { data = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch (e) { data = null; }
 
-    // 首次访问：给一个默认计时器
     if (!data || !Array.isArray(data.timers)) {
       addTimer();
       return;
     }
 
-    // 恢复默认时长
     if (typeof data.defaultSec === 'number' && data.defaultSec >= 0) {
       defaultSec = data.defaultSec;
       writeDefaultInputs(defaultSec);
     }
 
-    // 恢复序号
     if (typeof data.seq === 'number' && data.seq > 0) seq = data.seq;
 
-    // 用户可能把计时器全删了，尊重这个状态
     if (data.timers.length === 0) {
       updateEmpty();
       return;
