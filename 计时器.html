@@ -186,6 +186,43 @@
   .size-toggle.active{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
   .size-toggle svg{width:18px;height:18px;fill:currentColor}
 
+  /* ---------- 浮动容器 ---------- */
+  .float-wrap{
+    position: relative;
+  }
+  .float-wrap.floating{
+    position: fixed;
+    z-index: 500;
+    /* left / top / width 由 JS 设置 */
+  }
+
+  /* 拖动把手：仅浮动时显示 */
+  .drag-bar{
+    display: none;
+    height: 24px;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    color: var(--muted);
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+    border-radius: 10px;
+    transition: color .15s, background .15s;
+  }
+  .float-wrap.floating .drag-bar{ display: flex; }
+  .drag-bar:hover{ color: var(--accent); background: var(--accent-soft); }
+  .drag-bar:active{ cursor: grabbing; }
+  .drag-bar svg{ width:22px; height:22px; fill: currentColor; opacity: .7; }
+  .drag-bar:hover svg{ opacity: 1; }
+
+  /* 吸附高亮 */
+  #grid.snap-hint{
+    outline: 2px dashed var(--accent);
+    outline-offset: -2px;
+    border-radius: 6px;
+  }
+
   /* ---------- 网格 ---------- */
   .grid{
     display:grid;
@@ -385,7 +422,7 @@
     .card.running .setters:hover{background:transparent}
   }
 
-  /* ==================== 拖拽排序 ==================== */
+  /* ==================== 卡片拖拽排序 ==================== */
   .card.dragging{
     pointer-events:none;
     opacity:.95;
@@ -475,8 +512,13 @@
     </button>
   </div>
 
-  <main id="grid" class="grid"></main>
-  <div id="empty" class="empty">点「添加」创建计时器</div>
+  <div id="floatWrap" class="float-wrap">
+    <div id="dragBar" class="drag-bar" title="拖动容器">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16v2H4zm0 4h16v2H4zm0 4h16v2H4z"/></svg>
+    </div>
+    <main id="grid" class="grid"></main>
+    <div id="empty" class="empty">点「添加」创建计时器</div>
+  </div>
 </div>
 
 <!-- 计时器卡片模板 -->
@@ -540,15 +582,21 @@
   var defH         = document.getElementById('defH');
   var defM         = document.getElementById('defM');
   var defS         = document.getElementById('defS');
+  var floatWrap    = document.getElementById('floatWrap');
+  var dragBar      = document.getElementById('dragBar');
 
   var timers = [];
   var rafId  = null;
   var seq    = 0;
 
   var defaultSec = 300;
-  var STORE_KEY  = 'countdown-state-v3';
-  var SIZE_KEY   = 'countdown-container-size';
-  var COMPACT_KEY= 'countdown-compact';
+  var STORE_KEY   = 'countdown-state-v3';
+  var SIZE_KEY    = 'countdown-container-size';
+  var COMPACT_KEY = 'countdown-compact';
+  var FLOAT_KEY   = 'countdown-float-pos';
+
+  var DRAG_BAR_H = 24;   // 拖动条高度
+  var SNAP_DIST  = 22;   // 边缘吸附距离
 
   /* ============ 通用工具 ============ */
 
@@ -604,19 +652,174 @@
   }
   sizeToggle.addEventListener('click', toggleSizePanel);
 
+  /* ============ 浮动容器（可拖放 + 边缘吸附） ============ */
+
+  var isFloating = false;
+
+  function computeWrapWidth() {
+    var maxW = parseFloat(maxWIn.value) || 0;
+    var avail = window.innerWidth - 24;
+    if (avail < 200) avail = window.innerWidth;
+    var base = maxW > 0 ? maxW : 1200;
+    return Math.min(base, avail);
+  }
+
+  function loadFloatPos() {
+    try { return JSON.parse(localStorage.getItem(FLOAT_KEY) || 'null'); }
+    catch (e) { return null; }
+  }
+
+  function saveFloatPos() {
+    if (!isFloating) return;
+    var r = floatWrap.getBoundingClientRect();
+    try {
+      localStorage.setItem(FLOAT_KEY, JSON.stringify({
+        left: Math.round(r.left),
+        top: Math.round(r.top)
+      }));
+    } catch (e) { /* 忽略 */ }
+  }
+
+  function enableFloating() {
+    var rect = grid.getBoundingClientRect();
+    var saved = loadFloatPos();
+
+    isFloating = true;
+    floatWrap.classList.add('floating');
+    floatWrap.style.width = computeWrapWidth() + 'px';
+
+    var left = saved ? saved.left : rect.left;
+    var top  = saved ? saved.top  : (rect.top - DRAG_BAR_H);
+    if (!isFinite(left)) left = 0;
+    if (!isFinite(top)) top = 0;
+
+    floatWrap.style.left = Math.max(0, left) + 'px';
+    floatWrap.style.top  = Math.max(0, top) + 'px';
+
+    requestAnimationFrame(clampPosition);
+  }
+
+  function disableFloating() {
+    isFloating = false;
+    floatWrap.classList.remove('floating');
+    floatWrap.style.left = '';
+    floatWrap.style.top = '';
+    floatWrap.style.width = '';
+    grid.classList.remove('snap-hint');
+    try { localStorage.removeItem(FLOAT_KEY); } catch (e) { /* 忽略 */ }
+  }
+
+  function clampPosition() {
+    if (!isFloating) return;
+    var r = floatWrap.getBoundingClientRect();
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var left = Math.max(0, Math.min(r.left, vw - r.width));
+    var top  = Math.max(0, Math.min(r.top,  vh - r.height));
+    floatWrap.style.left = left + 'px';
+    floatWrap.style.top  = top + 'px';
+  }
+
+  /* --- 拖动条拖拽 --- */
+
+  var barDrag = {
+    active: false,
+    pointerId: null,
+    startX: 0, startY: 0,
+    baseLeft: 0, baseTop: 0
+  };
+
+  function onBarDown(e) {
+    if (!isFloating) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+
+    var r = floatWrap.getBoundingClientRect();
+    barDrag.active = true;
+    barDrag.pointerId = e.pointerId;
+    barDrag.startX = e.clientX;
+    barDrag.startY = e.clientY;
+    barDrag.baseLeft = r.left;
+    barDrag.baseTop = r.top;
+
+    try { dragBar.setPointerCapture(e.pointerId); } catch (err) { /* 忽略 */ }
+    document.body.classList.add('dragging-active');
+  }
+
+  function onBarMove(e) {
+    if (!barDrag.active || e.pointerId !== barDrag.pointerId) return;
+    if (e.cancelable) e.preventDefault();
+
+    var dx = e.clientX - barDrag.startX;
+    var dy = e.clientY - barDrag.startY;
+    applyFloatMove(barDrag.baseLeft + dx, barDrag.baseTop + dy);
+  }
+
+  function onBarUp(e) {
+    if (!barDrag.active || e.pointerId !== barDrag.pointerId) return;
+    barDrag.active = false;
+    barDrag.pointerId = null;
+    document.body.classList.remove('dragging-active');
+    grid.classList.remove('snap-hint');
+    try { dragBar.releasePointerCapture(e.pointerId); } catch (err) { /* 忽略 */ }
+    saveFloatPos();
+  }
+
+  function applyFloatMove(left, top) {
+    var r = floatWrap.getBoundingClientRect();
+    var w = r.width, h = r.height;
+    var vw = window.innerWidth, vh = window.innerHeight;
+
+    var snapH = 0, snapV = 0;
+
+    /* 水平吸附 */
+    if (left <= SNAP_DIST) { left = 0; snapH = -1; }
+    else if (left + w >= vw - SNAP_DIST) { left = vw - w; snapH = 1; }
+
+    /* 垂直吸附 */
+    if (top <= SNAP_DIST) { top = 0; snapV = -1; }
+    else if (top + h >= vh - SNAP_DIST) { top = vh - h; snapV = 1; }
+
+    /* 强制留在视口内 */
+    left = Math.max(0, Math.min(left, Math.max(0, vw - w)));
+    top  = Math.max(0, Math.min(top,  Math.max(0, vh - h)));
+
+    floatWrap.style.left = left + 'px';
+    floatWrap.style.top  = top + 'px';
+
+    grid.classList.toggle('snap-hint', snapH !== 0 || snapV !== 0);
+  }
+
+  dragBar.addEventListener('pointerdown', onBarDown);
+  dragBar.addEventListener('pointermove', onBarMove);
+  dragBar.addEventListener('pointerup', onBarUp);
+  dragBar.addEventListener('pointercancel', onBarUp);
+
   /* ============ 容器尺寸 ============ */
 
   function applyMaxSize() {
-    var w = parseFloat(maxWIn.value);
-    var h = parseFloat(maxHIn.value);
+    var w = parseFloat(maxWIn.value) || 0;
+    var h = parseFloat(maxHIn.value) || 0;
+
     grid.style.maxWidth  = (w > 0) ? w + 'px' : '';
     grid.style.maxHeight = (h > 0) ? h + 'px' : '';
+
     try {
       localStorage.setItem(SIZE_KEY, JSON.stringify({
         w: w > 0 ? w : '',
         h: h > 0 ? h : ''
       }));
     } catch (e) { /* 忽略 */ }
+
+    if (w > 0 || h > 0) {
+      if (!isFloating) {
+        enableFloating();
+      } else {
+        floatWrap.style.width = computeWrapWidth() + 'px';
+        clampPosition();
+      }
+    } else {
+      if (isFloating) disableFloating();
+    }
   }
 
   function restoreMaxSize() {
@@ -630,6 +833,12 @@
 
   maxWIn.addEventListener('input', applyMaxSize);
   maxHIn.addEventListener('input', applyMaxSize);
+
+  window.addEventListener('resize', function () {
+    if (!isFloating) return;
+    floatWrap.style.width = computeWrapWidth() + 'px';
+    clampPosition();
+  });
 
   /* ============ 紧凑模式 ============ */
 
@@ -789,13 +998,13 @@
     saveTimers();
   }
 
-  /* ============ 拖拽排序 ============ */
+  /* ============ 卡片拖拽排序 ============ */
 
   var drag = {
-    card: null,          // timer 对象
-    pending: false,      // 长按等待中
-    active: false,       // 拖拽已激活
-    timer: null,         // 长按定时器
+    card: null,
+    pending: false,
+    active: false,
+    timer: null,
     startX: 0, startY: 0,
     offsetX: 0, offsetY: 0,
     lastX: 0, lastY: 0,
@@ -879,14 +1088,12 @@
     drag.offsetX = drag.lastX - rect.left;
     drag.offsetY = drag.lastY - rect.top;
 
-    /* 占位元素 */
     var ph = document.createElement('div');
     ph.className = 'drag-placeholder';
     ph.style.height = rect.height + 'px';
     card.parentNode.insertBefore(ph, card);
     drag.placeholder = ph;
 
-    /* 卡片 fixed 跟随 */
     card.classList.add('dragging');
     card.style.position = 'fixed';
     card.style.left = rect.left + 'px';
@@ -913,7 +1120,6 @@
     card.style.left = x + 'px';
     card.style.top = y + 'px';
 
-    /* 用指针位置判断目标卡片 */
     var el = document.elementFromPoint(drag.lastX, drag.lastY);
     var targetCard = el ? el.closest('.card') : null;
     if (!targetCard || targetCard === card) return;
@@ -990,7 +1196,6 @@
     timers = newTimers;
   }
 
-  /* 拖拽后拦截误触 click */
   grid.addEventListener('click', function (e) {
     if (drag.justDragged) {
       e.stopPropagation();
@@ -999,7 +1204,7 @@
   }, true);
 
   document.addEventListener('contextmenu', function (e) {
-    if (drag.active) e.preventDefault();
+    if (drag.active || barDrag.active) e.preventDefault();
   });
 
   /* ============ 创建计时器 ============ */
@@ -1061,7 +1266,6 @@
     el.reset.addEventListener('click', function () { resetTimer(t); });
     el.del.addEventListener('click', function () { removeTimer(t); });
 
-    /* 拖拽排序 */
     el.card.addEventListener('pointerdown', function (e) {
       onCardPointerDown(e, t);
     });
@@ -1120,9 +1324,9 @@
 
   addBtn.addEventListener('click', addTimer);
 
-  restoreMaxSize();
   restoreCompact();
   restoreState();
+  restoreMaxSize();   // 放在最后，恢复浮动位置时卡片已就位
 
 })();
 </script>
