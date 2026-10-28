@@ -363,7 +363,7 @@
     "name": "雷震子",
     "direction": "top",
     "zIndex": 1,
-    "remark": "西岐奸细：金锭\n麒麟崖-山魈：风雷符",
+    "remark": "金锭：西岐各种小怪\n风雷符：麒麟崖-山魈",
     "collectibles": [
       "天南星-玲珑丹(灵级)"
     ],
@@ -376,7 +376,7 @@
     "name": "杨戬",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "金锭：西岐各种小怪\n玄武岩：轩辕坟-灯芯马善",
     "collectibles": [
       "天南星-玲珑丹(灵级)"
     ],
@@ -588,7 +588,7 @@
   },
   {
     "x": 75,
-    "y": 344,
+    "y": 334,
     "name": "旱魃化身",
     "direction": "left",
     "zIndex": 1,
