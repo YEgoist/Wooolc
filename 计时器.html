@@ -193,10 +193,8 @@
   .float-wrap.floating{
     position: fixed;
     z-index: 500;
-    /* left / top / width 由 JS 设置 */
   }
 
-  /* 拖动把手：仅浮动时显示 */
   .drag-bar{
     display: none;
     height: 24px;
@@ -216,7 +214,6 @@
   .drag-bar svg{ width:22px; height:22px; fill: currentColor; opacity: .7; }
   .drag-bar:hover svg{ opacity: 1; }
 
-  /* 吸附高亮 */
   #grid.snap-hint{
     outline: 2px dashed var(--accent);
     outline-offset: -2px;
@@ -587,7 +584,7 @@
 
   var timers = [];
   var rafId  = null;
-  var seq    = 0;
+  var seq    = 0;   // 仅作内部 id，不再用于命名
 
   var defaultSec = 300;
   var STORE_KEY   = 'countdown-state-v3';
@@ -595,8 +592,8 @@
   var COMPACT_KEY = 'countdown-compact';
   var FLOAT_KEY   = 'countdown-float-pos';
 
-  var DRAG_BAR_H = 24;   // 拖动条高度
-  var SNAP_DIST  = 22;   // 边缘吸附距离
+  var DRAG_BAR_H = 24;
+  var SNAP_DIST  = 22;
 
   /* ============ 通用工具 ============ */
 
@@ -642,6 +639,19 @@
 
   function updateEmpty() {
     emptyEl.style.display = timers.length ? 'none' : '';
+  }
+
+  /* ============ 新计时器命名：基于当前已有名字，取最小空缺编号 ============ */
+
+  function computeNextTimerName() {
+    var used = {};
+    for (var i = 0; i < timers.length; i++) {
+      var n = (timers[i].el.name.value || '').trim();
+      if (n) used[n] = true;
+    }
+    var num = 1;
+    while (used['计时器 ' + num]) num++;
+    return '计时器 ' + num;
   }
 
   /* ============ 设置面板显隐 ============ */
@@ -719,8 +729,6 @@
     floatWrap.style.top  = top + 'px';
   }
 
-  /* --- 拖动条拖拽 --- */
-
   var barDrag = {
     active: false,
     pointerId: null,
@@ -771,15 +779,12 @@
 
     var snapH = 0, snapV = 0;
 
-    /* 水平吸附 */
     if (left <= SNAP_DIST) { left = 0; snapH = -1; }
     else if (left + w >= vw - SNAP_DIST) { left = vw - w; snapH = 1; }
 
-    /* 垂直吸附 */
     if (top <= SNAP_DIST) { top = 0; snapV = -1; }
     else if (top + h >= vh - SNAP_DIST) { top = vh - h; snapV = 1; }
 
-    /* 强制留在视口内 */
     left = Math.max(0, Math.min(left, Math.max(0, vw - w)));
     top  = Math.max(0, Math.min(top,  Math.max(0, vh - h)));
 
@@ -899,8 +904,7 @@
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify({
         timers: serializeTimers(),
-        defaultSec: defaultSec,
-        seq: seq
+        defaultSec: defaultSec
       }));
     } catch (e) { /* 忽略 */ }
   }
@@ -1237,7 +1241,7 @@
     el.del     = node.querySelector('.btn-del');
     el.fold    = node.querySelector('.btn-fold');
 
-    el.name.value = (typeof opts.name === 'string')
+    el.name.value = (typeof opts.name === 'string' && opts.name.trim())
       ? opts.name
       : ('计时器 ' + seq);
 
@@ -1274,7 +1278,7 @@
   }
 
   function addTimer() {
-    var t = createTimer(defaultSec);
+    var t = createTimer(defaultSec, { name: computeNextTimerName() });
     timers.push(t);
     grid.appendChild(t.el.card);
     paint(t, t.remainingMs);
@@ -1297,8 +1301,6 @@
       defaultSec = data.defaultSec;
       writeDefaultInputs(defaultSec);
     }
-
-    if (typeof data.seq === 'number' && data.seq > 0) seq = data.seq;
 
     if (data.timers.length === 0) {
       updateEmpty();
@@ -1326,7 +1328,7 @@
 
   restoreCompact();
   restoreState();
-  restoreMaxSize();   // 放在最后，恢复浮动位置时卡片已就位
+  restoreMaxSize();
 
 })();
 </script>
