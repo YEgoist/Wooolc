@@ -617,7 +617,9 @@
     "direction": "top",
     "zIndex": 1,
     "remark": "",
-    "collectibles": [],
+    "collectibles": [
+      "川贝-回灵丹(地级)"
+    ],
     "spirits": [],
     "isSecondary": false
   },
