@@ -684,7 +684,7 @@
     "name": "夷门",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "充值魔王Boss",
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
@@ -726,6 +726,17 @@
     "collectibles": [
       "元胡-补元丹(地级)"
     ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 506,
+    "y": 479,
+    "name": "涿鹿",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
     "spirits": [],
     "isSecondary": false
   }
