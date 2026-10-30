@@ -337,7 +337,7 @@
     "x": 117,
     "y": 599,
     "name": "西岐",
-    "direction": "top",
+    "direction": "bottom",
     "zIndex": 10,
     "remark": "",
     "collectibles": [],
@@ -511,8 +511,8 @@
     "isSecondary": true
   },
   {
-    "x": 302,
-    "y": 485,
+    "x": 285,
+    "y": 496,
     "name": "枸杞",
     "direction": "top",
     "zIndex": 1,
@@ -540,7 +540,7 @@
     "x": 125,
     "y": 590,
     "name": "西岐练兵场",
-    "direction": "right",
+    "direction": "top",
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
@@ -568,7 +568,7 @@
     "x": 144,
     "y": 597,
     "name": "密探",
-    "direction": "top",
+    "direction": "right",
     "zIndex": 1,
     "remark": "启示录",
     "collectibles": [],
@@ -579,7 +579,7 @@
     "x": 279,
     "y": 585,
     "name": "冀州",
-    "direction": "top",
+    "direction": "left",
     "zIndex": 10,
     "remark": "",
     "collectibles": [],
@@ -600,7 +600,7 @@
     "isSecondary": true
   },
   {
-    "x": 243,
+    "x": 241,
     "y": 510,
     "name": "封魔之地",
     "direction": "top",
@@ -646,7 +646,7 @@
     "isSecondary": false
   },
   {
-    "x": 306,
+    "x": 302,
     "y": 487,
     "name": "试炼之地",
     "direction": "top",
@@ -671,7 +671,7 @@
     "x": 316,
     "y": 677,
     "name": "神洲",
-    "direction": "right",
+    "direction": "bottom",
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
@@ -717,16 +717,18 @@
     "isSecondary": false
   },
   {
-    "x": 303,
-    "y": 593,
+    "x": 274,
+    "y": 570,
     "name": "昆仑矿场",
-    "direction": "right",
+    "direction": "top",
     "zIndex": 1,
     "remark": "",
     "collectibles": [
       "元胡-补元丹(地级)"
     ],
-    "spirits": [],
+    "spirits": [
+      "魔化九幽"
+    ],
     "isSecondary": false
   },
   {
@@ -738,6 +740,19 @@
     "remark": "",
     "collectibles": [],
     "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 302,
+    "y": 586,
+    "name": "冀州秘境",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "虎头仙"
+    ],
     "isSecondary": false
   }
 ]
