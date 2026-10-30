@@ -255,7 +255,7 @@ main{padding:14px 16px 80px}
 .mat.owned .mcheck{opacity:1}
 .card.done .mat{pointer-events:none}
 
-/* ★ 材料4、5：仅展示（虚线边框 + 更暗文字，无附加文字） */
+/* ★ 材料4、5：仅展示（虚线边框 + 更暗文字） */
 .mat.extra{
   pointer-events:none; cursor:default;
   border-style:dashed; background:transparent;
@@ -506,14 +506,17 @@ tr.done .tmat{pointer-events:none}
 .pop-state.done{background:var(--gold-soft); color:var(--gold)}
 .pop-state.todo{background:var(--panel3); color:var(--text-3)}
 
+/* ★ 修复网格对齐，防止高度被异常拉伸 */
 .pop-mats{
   display:grid; gap:3px 10px;
   grid-template-columns:repeat(auto-fit, minmax(142px, 1fr));
   font-size:var(--f115); line-height:1.65;
+  align-items: start;
 }
 .pm{
   display:flex; gap:5px; align-items:center; min-width:0;
   padding:1px 5px 1px 3px; border-radius:5px; color:var(--text-2);
+  align-self: start;
 }
 .pm i{
   font-style:normal; color:var(--text-4); font-size:var(--f95); background:var(--panel3);
@@ -636,50 +639,10 @@ tr.done .tmat{pointer-events:none}
 <script>
 /* ================================================================
    ★★★ 数据源配置（内置数据 / 外部文件，二选一） ★★★
-   ----------------------------------------------------------------
-   方式 A（推荐：单文件分发）：使用内置数据
-     把图纸 JSON 粘贴到下方 INLINE_DATA 的位置。
-     支持两种写法：① 直接写对象/数组；② 写成 JSON 字符串。
-     只要 INLINE_DATA 不为 null，就优先使用它，不再请求外部文件。
-
-   方式 B（外置数据文件）：使用外部 JSON
-     将 INLINE_DATA 保持为 null，并让 DATA_FILE 指向你的 JSON 文件。
-     注意：直接双击打开 HTML（file:// 协议）时浏览器会拦截 fetch，
-           此时可用「📂 加载」按钮手动选择文件。
    ================================================================ */
 
 const DATA_FILE = './blueprints.json';
 
-/* -----------------------------------------------------------------
-   ★ 内置数据写在这里（保持 null 表示使用外部文件）
-
-   示例（取消注释并替换成你的数据即可）：
-
-const INLINE_DATA = {
-  "blueprints": [
-    {
-      "id": "锻造图纸1",
-      "rank": "R11",
-      "type": "武器",
-      "name": "阴阳之剑",
-      "product": "阴阳之剑",
-      "materials": [
-        "青锋战刃(法器)", "寒光魔杖(法器)", "玉魄道剑(法器)",
-        "天使之泪", "矿晶"
-      ],
-      "drop": "万狐之主、朝歌大怪"
-    }
-  ]
-};
-
-   也可以直接粘贴纯数组：
-
-const INLINE_DATA = [
-  { "id": "锻造图纸1", "rank": "R11", "type": "武器", "name": "阴阳之剑",
-    "materials": ["材料A", "材料B", "材料C", "材料D", "材料E"],
-    "drop": "万狐之主" }
-];
-   ----------------------------------------------------------------- */
 const INLINE_DATA = null;
 
 
@@ -745,21 +708,14 @@ function splitMonsters(drop){
   )];
 }
 
-/* ★ 读取内置数据；无效时返回 null */
 function getInlineData(){
   if (INLINE_DATA == null) return null;
-
   let d = INLINE_DATA;
   if (typeof d === 'string'){
     try { d = JSON.parse(d); }
-    catch(e){
-      console.warn('内置数据字符串解析失败：', e);
-      return null;
-    }
+    catch(e){ console.warn('内置数据解析失败：', e); return null; }
   }
-  if (Array.isArray(d)) return d;
-  if (typeof d === 'object' && d !== null) return d;
-  return null;
+  return (Array.isArray(d) || (typeof d === 'object' && d !== null)) ? d : null;
 }
 
 /* ================= 本地存储 ================= */
@@ -845,7 +801,7 @@ function fitTableHeight(){
   gridEl.style.height = h + 'px';
 }
 
-/* ================= 种类导航：高亮与跳转 ================= */
+/* ================= 种类导航 ================= */
 let activeRaf = null;
 
 function scheduleActiveUpdate(){
@@ -997,8 +953,7 @@ function showDataError(err, url){
       "drop": "万狐之主、朝歌大怪"
     }
   ]
-}
-（materials 可填 5 项：前 3 项可勾选，后 2 项仅展示）</pre>`;
+}</pre>`;
   const btn = $('btnPickData');
   if (btn) btn.onclick = () => $('fileData').click();
   render();
@@ -1058,7 +1013,6 @@ function getFiltered(){
 function render(){
   hidePop();
 
-  // 记录表格内部滚动位置
   let sPos = { top: 0, left: 0 };
   const oldScroller = $('tableScroll');
   if (oldScroller){
@@ -1105,18 +1059,13 @@ function render(){
 
   if (viewMode === 'table'){
     renderTable(list);
-
-    /* ★ 修复：必须先让容器获得正确高度，否则此刻表格尚无可滚动区域，
-       scrollTop 会被浏览器强制归零，导致每次点击都跳回顶端。 */
     fitTableHeight();
 
-    // 再恢复滚动位置
     const scroller = $('tableScroll');
     if (scroller){
       scroller.scrollTop = sPos.top;
       scroller.scrollLeft = sPos.left;
 
-      // 二次校准：部分浏览器在重排后会延迟截断 scrollTop
       requestAnimationFrame(() => {
         const s2 = $('tableScroll');
         if (!s2) return;
@@ -1149,7 +1098,7 @@ function renderCard(bp){
       <span class="mcheck">✓</span>
     </div>`).join('');
 
-  // 材料4、5：仅展示，不附加文字
+  // 材料4、5：仅展示
   const extraHtml = [3, 4].map(i => {
     const m = bp.materials5[i];
     if (!m) return '';
@@ -1247,7 +1196,7 @@ function renderRowHTML(bp){
     </tr>`;
 }
 
-/* ---------- 表格视图：整体（含左侧种类导航） ---------- */
+/* ---------- 表格视图：整体 ---------- */
 function renderTable(list){
   const counts = new Map();
   list.forEach(bp => counts.set(bp.type, (counts.get(bp.type) || 0) + 1));
@@ -1303,9 +1252,9 @@ function popItemHTML(bp, currentId){
   const cells = bp.materials5.map((m, i) => {
     const num = i + 1;
 
-    if (!m){
-      return `<span class="pm empty"><i>${num}</i><span>—</span></span>`;
-    }
+    // ★ 修复：如果材料为空，直接不渲染，避免高度异常
+    if (!m) return '';
+
     if (i >= 3){
       return `<span class="pm extra"><i>${num}</i><span>${esc(m)}</span><em></em></span>`;
     }
@@ -1705,7 +1654,6 @@ buildFilters();
 render();
 
 (function initData(){
-  // 优先使用内置数据
   const inline = getInlineData();
   if (inline){
     try{
@@ -1716,7 +1664,6 @@ render();
       console.warn('内置数据加载失败，回退到外部文件：', err);
     }
   }
-  // 没有内置数据（或内置数据无效）时读取外部文件
   loadFromUrl(DATA_FILE);
 })();
 </script>
