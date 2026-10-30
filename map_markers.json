@@ -715,5 +715,18 @@
       "申公豹坐骑"
     ],
     "isSecondary": false
+  },
+  {
+    "x": 303,
+    "y": 593,
+    "name": "昆仑矿场",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "元胡-补元丹(地级)"
+    ],
+    "spirits": [],
+    "isSecondary": false
   }
 ]
