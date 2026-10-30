@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>图纸管理 · 材料与完成度追踪</title>
+<style>
+/* ================= 主题变量 ================= */
+:root{
+  --card-min:300px;
+  --fs-scale:1;
+
+  --f95:  calc(9.5px  * var(--fs-scale));
+  --f10:  calc(10px   * var(--fs-scale));
+  --f105: calc(10.5px * var(--fs-scale));
+  --f11:  calc(11px   * var(--fs-scale));
+  --f115: calc(11.5px * var(--fs-scale));
+  --f12:  calc(12px   * var(--fs-scale));
+  --f125: calc(12.5px * var(--fs-scale));
+  --f13:  calc(13px   * var(--fs-scale));
+  --f135: calc(13.5px * var(--fs-scale));
+  --f14:  calc(14px   * var(--fs-scale));
+  --f15:  calc(15px   * var(--fs-scale));
+  --f16:  calc(16px   * var(--fs-scale));
+  --f34:  calc(34px   * var(--fs-scale));
+
+  /* 深色主题（默认） */
+  --bg:#0f1216;
+  --head-bg:rgba(15,18,22,.96);
+  --panel:#171c22;
+  --panel2:#1e242c;
+  --panel3:#232b34;
+  --border:#2a323c;
+  --border-hi:#3a4552;
+
+  --text:#e6edf3;
+  --text-2:#9aa6b2;
+  --text-3:#7c8894;
+  --text-4:#5d6a77;
+  --text-5:#495460;
+
+  --accent:#4aa8ff;
+  --accent-soft:rgba(74,168,255,.15);
+  --accent-line:rgba(74,168,255,.5);
+  --accent-focus:rgba(74,168,255,.1);
+
+  --green:#2ecc71;
+  --green-text:#7ee2a8;
+  --green-soft:rgba(46,204,113,.12);
+  --green-line:rgba(46,204,113,.5);
+
+  --gold:#f5c451;
+  --gold-soft:rgba(245,196,81,.1);
+  --gold-line:rgba(245,196,81,.5);
+
+  --pop-bg:#1b222b;
+  --pop-head:#1e2631;
+  --pop-item:#171c22;
+  --pop-border:#33404d;
+  --pop-item-border:#262f38;
+
+  --scroll:#2f3a45;
+  --scroll-hi:#3d4b59;
+
+  --input-bg:#1e242c;
+
+  --shadow-pop:0 18px 52px -14px rgba(0,0,0,.8);
+  --shadow-done:0 0 0 1px rgba(245,196,81,.08), 0 4px 18px -8px rgba(245,196,81,.35);
+  --shadow-done-hi:0 0 0 1px rgba(245,196,81,.15), 0 6px 22px -8px rgba(245,196,81,.5);
+}
+
+/* 浅色主题 */
+:root[data-theme="light"]{
+  --bg:#f2f5f9;
+  --head-bg:rgba(242,245,249,.96);
+  --panel:#ffffff;
+  --panel2:#f4f7fa;
+  --panel3:#e9eef4;
+  --border:#dbe2ea;
+  --border-hi:#c3cdd8;
+
+  --text:#1d2733;
+  --text-2:#4c5765;
+  --text-3:#6f7b89;
+  --text-4:#98a3b0;
+  --text-5:#b6bfca;
+
+  --accent:#1f6feb;
+  --accent-soft:rgba(31,111,235,.1);
+  --accent-line:rgba(31,111,235,.45);
+  --accent-focus:rgba(31,111,235,.12);
+
+  --green:#16a34a;
+  --green-text:#15803d;
+  --green-soft:rgba(22,163,74,.1);
+  --green-line:rgba(22,163,74,.42);
+
+  --gold:#b07d18;
+  --gold-soft:rgba(176,125,24,.09);
+  --gold-line:rgba(176,125,24,.4);
+
+  --pop-bg:#ffffff;
+  --pop-head:#f5f8fb;
+  --pop-item:#fbfcfd;
+  --pop-border:#d7dfe8;
+  --pop-item-border:#e4ebf2;
+
+  --scroll:#c8d2dd;
+  --scroll-hi:#b0bcc9;
+
+  --input-bg:#ffffff;
+
+  --shadow-pop:0 18px 52px -14px rgba(30,50,80,.22);
+  --shadow-done:0 0 0 1px rgba(176,125,24,.08), 0 4px 18px -8px rgba(176,125,24,.22);
+  --shadow-done-hi:0 0 0 1px rgba(176,125,24,.16), 0 6px 22px -8px rgba(176,125,24,.3);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;
+  background:var(--bg); color:var(--text); font-size:var(--f14);
+  -webkit-font-smoothing:antialiased;
+  transition:background .2s, color .2s;
+}
+button,input{font-family:inherit}
+
+/* ---------- 顶部 ---------- */
+.head{position:sticky; top:0; z-index:30; background:var(--head-bg);
+      backdrop-filter:blur(10px); border-bottom:1px solid var(--border);}
+.topbar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; padding:10px 16px 8px;}
+.brand{font-size:var(--f15); font-weight:700; white-space:nowrap; letter-spacing:.3px}
+.brand em{font-style:normal; font-size:var(--f115); color:var(--text-3); font-weight:400; margin-left:8px}
+.search{flex:1 1 200px; min-width:170px}
+.search input{
+  width:100%; padding:8px 12px; border-radius:9px; border:1px solid var(--border);
+  background:var(--input-bg); color:var(--text); outline:none; font-size:var(--f13); transition:.15s;
+}
+.search input::placeholder{color:var(--text-4)}
+.search input:focus{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-focus)}
+.tools{display:flex; align-items:center; gap:6px; flex-wrap:wrap}
+.btn{
+  padding:7px 11px; border-radius:9px; border:1px solid var(--border);
+  background:var(--panel2); color:var(--text); font-size:var(--f125); cursor:pointer;
+  transition:.15s; white-space:nowrap;
+}
+.btn:hover{border-color:var(--accent); color:var(--accent)}
+.btn.danger:hover{border-color:#ff5f6d; color:#ff5f6d}
+.btn.view{border-color:var(--accent-line)}
+.btn.view:hover{border-color:var(--accent)}
+.btn.theme{border-color:var(--border-hi)}
+.switch{display:flex; align-items:center; gap:6px; font-size:var(--f125); color:var(--text-3);
+        cursor:pointer; user-select:none; padding:6px 10px; border-radius:9px;
+        border:1px solid var(--border); background:var(--panel2); transition:.15s}
+.switch:hover{color:var(--text)}
+.switch input{accent-color:var(--accent); cursor:pointer; margin:0}
+
+.range-ctl{display:flex; align-items:center; gap:7px; font-size:var(--f125); color:var(--text-3);
+           padding:5px 10px; border-radius:9px; border:1px solid var(--border);
+           background:var(--panel2); user-select:none}
+.range-ctl:hover{color:var(--text)}
+.range-ctl input[type=range]{width:76px; accent-color:var(--accent); cursor:pointer; margin:0}
+.range-ctl b{color:var(--accent); font-weight:600; font-variant-numeric:tabular-nums;
+             min-width:34px; text-align:right; font-size:var(--f12)}
+
+/* ---------- 过滤器 ---------- */
+.filters{padding:2px 16px 10px}
+.frow{display:flex; align-items:flex-start; gap:8px; padding:3px 0; flex-wrap:wrap}
+.flabel{width:34px; flex:none; color:var(--text-4); font-size:var(--f12); padding-top:4px}
+.chips{display:flex; gap:6px; flex-wrap:wrap; flex:1}
+.chip{
+  padding:3px 10px; border-radius:999px; font-size:var(--f12); cursor:pointer;
+  border:1px solid var(--border); background:transparent; color:var(--text-3); transition:.13s;
+}
+.chip:hover{border-color:var(--border-hi); color:var(--text-2)}
+.chip.on{background:var(--accent-soft); border-color:var(--accent); color:var(--accent); font-weight:600}
+.mini{
+  padding:3px 10px; border-radius:999px; font-size:var(--f115); cursor:pointer;
+  border:1px dashed var(--border); background:transparent; color:var(--text-3); transition:.13s;
+}
+.mini:hover{border-color:#ff5f6d; color:#ff5f6d}
+
+/* ---------- 主体 ---------- */
+main{padding:14px 16px 80px}
+.stats{color:var(--text-3); font-size:var(--f12); margin-bottom:10px; display:flex; gap:14px; flex-wrap:wrap}
+.stats b{color:var(--text); font-weight:600}
+.stats .g{color:var(--green)}
+.stats .y{color:var(--gold)}
+
+/* ---------- 卡片视图 ---------- */
+.grid{
+  display:grid; gap:11px;
+  grid-template-columns:repeat(auto-fill, minmax(min(var(--card-min, 300px), 100%), 1fr));
+}
+
+.card{
+  background:var(--panel); border:1px solid var(--border); border-radius:12px;
+  padding:10px 12px 11px; display:flex; flex-direction:column; gap:8px;
+  transition:border-color .15s, background .15s, box-shadow .15s;
+}
+.card:hover{border-color:var(--border-hi)}
+
+.card.done{
+  border-color:var(--gold-line);
+  background:linear-gradient(180deg, var(--gold-soft), transparent), var(--panel);
+  box-shadow:var(--shadow-done);
+}
+.card.done .card-title{color:var(--gold)}
+.card.done:hover{
+  border-color:var(--gold);
+  box-shadow:var(--shadow-done-hi);
+}
+
+.card-head{display:flex; align-items:center; gap:6px; min-height:20px}
+.tag{font-size:var(--f11); padding:2px 7px; border-radius:6px; font-weight:700;
+     letter-spacing:.3px; white-space:nowrap; flex:none}
+.tag.rank{background:var(--green-soft); color:var(--green-text)}
+.tag.rank.r-b{background:var(--accent-soft); color:var(--accent)}
+.tag.rank.r-c{background:rgba(176,124,255,.16); color:#b07cff}
+.tag.rank.r-d{background:rgba(255,159,67,.15); color:#ff9f43}
+.tag.rank.r-e{background:rgba(255,95,109,.15); color:#ff5f6d}
+:root[data-theme="light"] .tag.rank.r-c{background:rgba(124,58,237,.1); color:#7c3aed}
+:root[data-theme="light"] .tag.rank.r-d{background:rgba(234,88,12,.1); color:#c2410c}
+:root[data-theme="light"] .tag.rank.r-e{background:rgba(220,38,38,.1); color:#dc2626}
+.tag.type{background:var(--panel3); color:var(--text-3)}
+
+.bp-id{
+  margin-left:auto; font-size:var(--f11); color:var(--text-3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  max-width:60%; padding-left:6px; letter-spacing:.2px;
+}
+.card.done .bp-id{color:var(--gold); font-weight:600}
+
+.card-title{font-size:var(--f15); font-weight:600; margin:0; line-height:1.3; word-break:break-all}
+
+.mats{display:flex; flex-direction:column; gap:5px}
+.mat{
+  display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:7px;
+  font-size:var(--f125); border:1px solid var(--border); background:var(--panel2);
+  color:var(--text-2); cursor:pointer; user-select:none; transition:.12s; line-height:1.4;
+}
+.mat:hover{border-color:var(--border-hi); color:var(--text); background:var(--panel3)}
+.mat .mnum{
+  width:16px; height:16px; flex:none; border-radius:4px; background:var(--panel3);
+  color:var(--text-5); font-size:var(--f10); font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.mat .mname{flex:1; word-break:break-all}
+.mat .mcheck{margin-left:auto; flex:none; font-size:var(--f12); opacity:0; transition:.12s; color:var(--green)}
+.mat.owned{
+  background:var(--green-soft); border-color:var(--green-line);
+  color:var(--green-text); font-weight:600;
+}
+.mat.owned .mnum{background:var(--green-soft); color:var(--green-text)}
+.mat.owned .mcheck{opacity:1}
+.card.done .mat{pointer-events:none}
+
+/* ★ 材料4、5：仅展示（样式区分：虚线边框 + 更暗的文字） */
+.mat.extra{
+  pointer-events:none; cursor:default;
+  border-style:dashed; background:transparent;
+  color:var(--text-4); font-weight:400;
+}
+.mat.extra .mnum{background:transparent; color:var(--text-5); border:1px dashed var(--border)}
+
+.card-foot{display:flex; align-items:center; justify-content:space-between; gap:8px;
+           margin-top:auto; padding-top:2px}
+.progress{font-size:var(--f115); color:var(--text-3)}
+.progress.full{color:var(--green); font-weight:600}
+.btn-complete{
+  padding:5px 13px; border-radius:7px; font-size:var(--f12); cursor:pointer; transition:.15s;
+  border:1px solid var(--border); background:var(--panel2); color:var(--text-3);
+}
+.btn-complete:hover{border-color:var(--accent); color:var(--accent)}
+.btn-complete.ready{
+  border-color:var(--green-line); color:var(--green-text); background:var(--green-soft);
+  font-weight:600; box-shadow:0 0 0 3px var(--green-soft);
+}
+.btn-complete:disabled{opacity:.45; cursor:not-allowed}
+.btn-complete:disabled:hover{border-color:var(--border); color:var(--text-3)}
+
+.btn-unlock{
+  padding:5px 13px; border-radius:7px; font-size:var(--f12); cursor:pointer;
+  border:1px solid var(--gold-line); background:var(--gold-soft);
+  color:var(--gold); font-weight:600;
+  transition:opacity .18s, background .15s, border-color .15s;
+}
+.btn-unlock:hover{background:var(--gold-soft); border-color:var(--gold)}
+
+@media (hover: hover) and (pointer: fine){
+  .card .btn-unlock,
+  .bp-table tbody tr .btn-unlock{
+    opacity:0; pointer-events:none;
+  }
+  .card:hover .btn-unlock,
+  .card:focus-within .btn-unlock,
+  .bp-table tbody tr:hover .btn-unlock,
+  .bp-table tbody tr:focus-within .btn-unlock{
+    opacity:1; pointer-events:auto;
+  }
+}
+
+.drop{font-size:var(--f105); color:var(--text-4); line-height:1.7;
+      border-top:1px dashed var(--border); padding-top:6px; word-break:break-all}
+.drop b{color:var(--text-3); font-weight:600; margin-right:2px}
+.monster-tag{
+  display:inline-block; padding:1px 7px; margin:1px 3px 1px 0; border-radius:999px;
+  font-size:var(--f105); color:var(--text-3); background:var(--panel3);
+  border:1px solid transparent; cursor:pointer; transition:.12s; white-space:nowrap;
+}
+.monster-tag:hover{color:var(--accent); border-color:var(--accent-line); background:var(--accent-soft)}
+.monster-tag.active{color:var(--accent); border-color:var(--accent); background:var(--accent-soft); font-weight:600}
+
+.no-mat{font-size:var(--f115); color:var(--text-4)}
+
+/* ---------- 表格视图（左侧种类导航） ---------- */
+.table-layout{
+  display:flex; align-items:stretch;
+  border:1px solid var(--border); border-radius:12px;
+  background:var(--panel);
+  overflow:hidden;
+}
+
+.type-nav{
+  flex:0 0 100px; width:100px;
+  overflow-y:auto; overscroll-behavior:contain;
+  background:var(--panel2);
+  border-right:1px solid var(--border);
+  padding:6px 5px;
+  display:flex; flex-direction:column; gap:3px;
+}
+.type-nav::-webkit-scrollbar{width:6px}
+.type-nav::-webkit-scrollbar-thumb{background:var(--scroll); border-radius:3px}
+.type-nav::-webkit-scrollbar-track{background:transparent}
+
+.type-nav-item{
+  display:flex; align-items:center; justify-content:space-between; gap:4px;
+  padding:5px 8px; border-radius:7px;
+  font-size:var(--f115); color:var(--text-3);
+  background:transparent; border:1px solid transparent;
+  cursor:pointer; white-space:nowrap; transition:.12s;
+  text-align:left;
+}
+.type-nav-item .tname{overflow:hidden; text-overflow:ellipsis}
+.type-nav-item .cnt{
+  font-size:var(--f10); color:var(--text-4);
+  font-variant-numeric:tabular-nums; flex:none;
+}
+.type-nav-item:hover{color:var(--text); background:var(--panel3)}
+.type-nav-item.active{
+  color:var(--accent); background:var(--accent-soft);
+  border-color:var(--accent-line); font-weight:600;
+}
+.type-nav-item.active .cnt{color:var(--accent)}
+
+.table-scroll{
+  flex:1 1 auto; min-width:0;
+  overflow:auto; overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.table-scroll::-webkit-scrollbar{width:10px; height:10px}
+.table-scroll::-webkit-scrollbar-thumb{background:var(--scroll); border-radius:5px}
+.table-scroll::-webkit-scrollbar-thumb:hover{background:var(--scroll-hi)}
+.table-scroll::-webkit-scrollbar-track{background:transparent}
+
+body.table-mode main{padding-bottom:16px}
+
+.bp-table{
+  width:100%; border-collapse:separate; border-spacing:0;
+  font-size:var(--f125); min-width:1180px;
+}
+.bp-table th,
+.bp-table td{
+  padding:7px 10px; text-align:left;
+  border-bottom:1px solid var(--border); vertical-align:middle;
+}
+.bp-table thead th{
+  position:sticky; top:0; z-index:2;
+  background:var(--panel2);
+  font-size:var(--f11); color:var(--text-3); font-weight:600;
+  letter-spacing:.3px; white-space:nowrap;
+  border-bottom:1px solid var(--border-hi);
+}
+.bp-table tbody tr{transition:background .12s}
+.bp-table tbody tr:hover{background:var(--accent-soft)}
+.bp-table tbody tr:last-child td{border-bottom:none}
+
+.bp-table tbody tr.done{
+  background:linear-gradient(90deg, var(--gold-soft), transparent);
+}
+.bp-table tbody tr.done:hover{
+  background:linear-gradient(90deg, var(--gold-soft), var(--gold-soft));
+}
+.bp-table tbody tr.done td{border-bottom-color:var(--gold-line)}
+.bp-table tbody tr.done .c-name{color:var(--gold); font-weight:600}
+.bp-table tbody tr.done .c-id{color:var(--gold); font-weight:600}
+
+.c-rank, .c-type{white-space:nowrap}
+.c-id{
+  font-size:var(--f115); color:var(--text-3); white-space:nowrap;
+  font-variant-numeric:tabular-nums; letter-spacing:.2px;
+}
+.c-name{font-weight:600; color:var(--text); word-break:break-all; min-width:118px}
+.c-mat{min-width:126px}
+
+.tmat{
+  display:inline-block; padding:2px 9px; border-radius:5px;
+  border:1px solid var(--border); background:var(--panel2);
+  color:var(--text-2); font-size:var(--f115); cursor:pointer; user-select:none;
+  transition:.12s; line-height:1.45; max-width:100%;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.tmat:hover{border-color:var(--border-hi); color:var(--text); background:var(--panel3)}
+.tmat.owned{
+  background:var(--green-soft); border-color:var(--green-line);
+  color:var(--green-text); font-weight:600;
+}
+tr.done .tmat{pointer-events:none}
+
+.tmat.extra{
+  pointer-events:none; cursor:default;
+  border-style:dashed; background:transparent; color:var(--text-4);
+}
+.tmat-empty{color:var(--text-5); font-size:var(--f115)}
+
+.c-progress{
+  white-space:nowrap; font-variant-numeric:tabular-nums;
+  color:var(--text-3); font-size:var(--f115); text-align:center;
+}
+.c-progress .full{color:var(--green); font-weight:600}
+
+.c-action{white-space:nowrap; text-align:center}
+.btn-complete.sm, .btn-unlock.sm{
+  padding:3px 10px; font-size:var(--f11); border-radius:6px;
+  white-space:nowrap; box-shadow:none;
+}
+.btn-complete.sm.ready{box-shadow:none}
+
+.c-drop{min-width:180px; max-width:320px; line-height:1.7; word-break:break-all}
+.c-drop .monster-tag{font-size:var(--f10)}
+
+/* ---------- 怪物掉落浮窗 ---------- */
+.pop{
+  position:fixed; z-index:100;
+  width:min(500px, calc(100vw - 20px));
+  max-height:min(72vh, 640px);
+  display:flex; flex-direction:column;
+  background:var(--pop-bg); border:1px solid var(--pop-border); border-radius:12px;
+  box-shadow:var(--shadow-pop);
+  overflow:hidden;
+}
+.pop[hidden]{display:none}
+.pop-head{
+  display:flex; align-items:center; gap:8px; padding:9px 10px 9px 12px;
+  border-bottom:1px solid var(--border); background:var(--pop-head); flex:none;
+}
+.pop-title{
+  font-size:var(--f13); font-weight:600; color:var(--text); flex:1;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.pop-title b{color:var(--accent)}
+.pop-count{
+  font-size:var(--f11); color:var(--text-3); padding:1px 8px; border-radius:999px;
+  background:var(--panel3); flex:none;
+}
+.pop-close{
+  width:22px; height:22px; flex:none; border-radius:6px; border:none; background:transparent;
+  color:var(--text-3); cursor:pointer; font-size:var(--f16); line-height:1;
+  display:flex; align-items:center; justify-content:center; transition:.12s;
+}
+.pop-close:hover{background:var(--panel3); color:var(--text)}
+
+.pop-body{
+  flex:1 1 auto; min-height:0; overflow-y:auto;
+  overscroll-behavior:contain; -webkit-overflow-scrolling:touch;
+  padding:8px 10px 10px;
+  display:flex; flex-direction:column; gap:7px;
+}
+.pop-body::-webkit-scrollbar{width:8px}
+.pop-body::-webkit-scrollbar-thumb{background:var(--scroll); border-radius:4px}
+.pop-body::-webkit-scrollbar-thumb:hover{background:var(--scroll-hi)}
+.pop-body::-webkit-scrollbar-track{background:transparent}
+
+.pop-item{
+  flex:none;
+  background:var(--pop-item); border:1px solid var(--pop-item-border); border-radius:9px;
+  padding:7px 9px 8px; display:flex; flex-direction:column; gap:6px;
+  transition:border-color .15s, background .15s;
+}
+.pop-item.current{box-shadow:inset 3px 0 0 var(--accent)}
+.pop-item.completed{
+  border-color:var(--gold-line);
+  background:linear-gradient(180deg, var(--gold-soft), transparent), var(--pop-item);
+}
+.pop-item.completed .pop-item-name{color:var(--gold)}
+
+.pop-item-head{display:flex; align-items:center; gap:5px; flex-wrap:wrap}
+.pop-item-name{font-size:var(--f125); font-weight:600; color:var(--text); word-break:break-all}
+.pop-item-id{font-size:var(--f105); color:var(--text-4); margin-left:auto; white-space:nowrap}
+.pop-item.completed .pop-item-id{color:var(--gold)}
+
+.pop-state{
+  font-size:var(--f10); padding:1px 7px; border-radius:999px; font-weight:700;
+  letter-spacing:.3px; flex:none; white-space:nowrap;
+}
+.pop-state.done{background:var(--gold-soft); color:var(--gold)}
+.pop-state.todo{background:var(--panel3); color:var(--text-3)}
+
+.pop-mats{
+  display:grid; gap:3px 10px;
+  grid-template-columns:repeat(auto-fit, minmax(142px, 1fr));
+  font-size:var(--f115); line-height:1.65;
+}
+.pm{
+  display:flex; gap:5px; align-items:center; min-width:0;
+  padding:1px 5px 1px 3px; border-radius:5px; color:var(--text-2);
+}
+.pm i{
+  font-style:normal; color:var(--text-4); font-size:var(--f95); background:var(--panel3);
+  border-radius:4px; padding:0 4px; flex:none; letter-spacing:.3px; min-width:16px;
+  text-align:center;
+}
+.pm span{word-break:break-all; flex:1; min-width:0}
+.pm em{font-style:normal; font-size:var(--f10); flex:none; line-height:1}
+
+.pm.owned{background:var(--green-soft); color:var(--green-text); font-weight:600}
+.pm.owned i{background:var(--green-soft); color:var(--green-text)}
+.pm.owned em{color:var(--green); font-weight:800}
+
+.pm.lack{color:var(--text-2)}
+.pm.lack em{color:var(--text-5)}
+
+.pm.extra{color:var(--text-4)}
+.pm.extra i{background:transparent; color:var(--text-5); border:1px dashed var(--border)}
+.pm.extra em{display:none}
+
+.pm.empty{color:var(--text-5); opacity:.7}
+.pm.empty i{background:transparent; color:var(--text-5)}
+
+.pop-empty{text-align:center; color:var(--text-3); font-size:var(--f125); padding:24px 10px}
+
+/* ---------- 提示 / 空态 ---------- */
+.notice{
+  background:rgba(255,95,109,.07); border:1px solid rgba(255,95,109,.35);
+  border-radius:12px; padding:14px 16px; margin-bottom:14px;
+  font-size:var(--f13); line-height:1.7;
+}
+.notice b{color:#ff8b95; display:block; margin-bottom:6px; font-size:var(--f14)}
+.notice code{background:var(--panel3); padding:1px 6px; border-radius:5px;
+             color:var(--accent); font-size:var(--f12); word-break:break-all}
+.notice pre{background:var(--panel2); border-radius:8px; padding:10px 12px; overflow:auto;
+            font-size:var(--f115); color:var(--text-2); line-height:1.6; margin:8px 0 0}
+.notice .act{margin-top:10px}
+
+.empty{text-align:center; color:var(--text-4); padding:70px 20px; font-size:var(--f13)}
+.empty span{display:block; font-size:var(--f34); margin-bottom:12px; opacity:.45}
+
+@media (max-width:900px){
+  .type-nav{flex-basis:86px; width:86px}
+}
+
+@media (max-width:640px){
+  .topbar{padding:8px 10px 6px}
+  .filters{padding:2px 10px 8px}
+  main{padding:10px 10px 70px}
+  .flabel{width:30px}
+  .range-ctl input[type=range]{width:60px}
+  .type-nav{flex-basis:76px; width:76px}
+}
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div class="topbar">
+    <div class="brand">📜 图纸管理<em>材料1-3勾选 · 材料4-5展示</em></div>
+    <div class="search">
+      <input id="search" type="text" autocomplete="off"
+             placeholder="模糊搜索：图纸名 / 材料 / 掉落怪物 / 编号…">
+    </div>
+    <div class="tools">
+      <button class="btn theme" id="btnTheme" title="切换深色 / 浅色主题">☀️ 浅色</button>
+      <button class="btn view" id="btnView" title="切换视图">📑 表格</button>
+
+      <div class="range-ctl" id="rangeCtl" title="拖动调节卡片宽度">
+        <span>宽</span>
+        <input type="range" id="cardWidth" min="220" max="480" step="10" value="300">
+        <b id="cardWidthVal">300</b>
+      </div>
+
+      <div class="range-ctl" title="拖动调节字体大小">
+        <span>字</span>
+        <input type="range" id="fontSize" min="85" max="130" step="5" value="100">
+        <b id="fontSizeVal">100%</b>
+      </div>
+
+      <label class="switch" title="开启后需双击材料才能切换状态">
+        <input type="checkbox" id="dblMode"><span>双击切换</span>
+      </label>
+      <button class="btn" id="btnExport">⬇ 导出</button>
+      <button class="btn" id="btnImport">⬆ 导入</button>
+      <button class="btn" id="btnLoadData">📂 加载</button>
+      <button class="btn danger" id="btnReset">重置</button>
+    </div>
+  </div>
+
+  <div class="filters">
+    <div class="frow"><span class="flabel">品阶</span><div class="chips" id="filterRank"></div></div>
+    <div class="frow"><span class="flabel">种类</span><div class="chips" id="filterType"></div></div>
+    <div class="frow">
+      <span class="flabel">状态</span><div class="chips" id="filterStatus"></div>
+      <button class="mini" id="clearFilters">清空筛选</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="notice" id="notice" hidden></div>
+  <div class="stats" id="stats"></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- 怪物掉落浮窗 -->
+<div id="monsterPop" class="pop" hidden>
+  <div class="pop-head">
+    <span class="pop-title" id="popTitle"></span>
+    <span class="pop-count" id="popCount"></span>
+    <button class="pop-close" id="popClose" title="关闭">×</button>
+  </div>
+  <div class="pop-body" id="popBody"></div>
+</div>
+
+<input type="file" id="fileProgress" accept=".json,application/json" hidden>
+<input type="file" id="fileData" accept=".json,application/json" hidden>
+
+<script>
+/* ================================================================
+   ★★★ 数据源配置（内置数据 / 外部文件，二选一） ★★★
+   ----------------------------------------------------------------
+   方式 A（推荐：单文件分发）：使用内置数据
+     把图纸 JSON 粘贴到下方 INLINE_DATA 的位置。
+     支持两种写法：① 直接写对象/数组；② 写成 JSON 字符串。
+     只要 INLINE_DATA 不为 null，就优先使用它，不再请求外部文件。
+
+   方式 B（外置数据文件）：使用外部 JSON
+     将 INLINE_DATA 保持为 null，并让 DATA_FILE 指向你的 JSON 文件。
+     注意：直接双击打开 HTML（file:// 协议）时浏览器会拦截 fetch，
+           此时可用「📂 加载」按钮手动选择文件。
+   ================================================================ */
+
+const DATA_FILE = './blueprints.json';
+
+/* -----------------------------------------------------------------
+   ★ 内置数据写在这里（保持 null 表示使用外部文件）
+
+   示例（取消注释并替换成你的数据即可）：
+
+const INLINE_DATA = {
+  "blueprints": [
+    {
+      "id": "锻造图纸1",
+      "rank": "R11",
+      "type": "武器",
+      "name": "阴阳之剑",
+      "product": "阴阳之剑",
+      "materials": [
+        "青锋战刃(法器)", "寒光魔杖(法器)", "玉魄道剑(法器)",
+        "天使之泪", "矿晶"
+      ],
+      "drop": "万狐之主、朝歌大怪"
+    }
+  ]
+};
+
+   也可以直接粘贴纯数组：
+
+const INLINE_DATA = [
+  { "id": "锻造图纸1", "rank": "R11", "type": "武器", "name": "阴阳之剑",
+    "materials": ["材料A", "材料B", "材料C", "材料D", "材料E"],
+    "drop": "万狐之主" }
+];
+   ----------------------------------------------------------------- */
+const INLINE_DATA = null;
+
+
+/* ================= 常量 ================= */
+const TYPE_ORDER = ['武器','护甲','头冠','项链','靴子','腰带','手镯','护腕','戒指','指环'];
+const MONSTER_SPLIT = /[、，,；;\/|]+/;
+const EMPTY_MAT = new Set(['暂无','无','－','-','—','']);
+
+/* ================= 状态 ================= */
+const LS_OWNED = 'bp_owned_v2';
+const LS_DONE  = 'bp_done_v1';
+const LS_PREF  = 'bp_pref_v4';
+
+let BP = [];
+let owned = {};
+let completed = {};
+let dblMode = false;
+let cardWidth = 300;
+let viewMode = 'card';
+let theme = 'dark';
+let fsScale = 1;
+const filters = { ranks:new Set(), types:new Set(), statuses:new Set() };
+let searchText = '';
+
+const $ = id => document.getElementById(id);
+const gridEl   = $('grid');
+const statsEl  = $('stats');
+const noticeEl = $('notice');
+const popEl    = $('monsterPop');
+
+/* ================= 工具函数 ================= */
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g,
+    c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function rankNum(r){
+  const n = parseInt(String(r).replace(/\D/g,''), 10);
+  return Number.isFinite(n) ? n : 999;
+}
+function rankClass(rank){
+  const n = rankNum(rank);
+  if (n === 999) return '';
+  if (n <= 14) return '';
+  if (n <= 18) return 'r-b';
+  if (n <= 22) return 'r-c';
+  if (n <= 25) return 'r-d';
+  return 'r-e';
+}
+function typeOrder(t){
+  const i = TYPE_ORDER.indexOf(t);
+  return i === -1 ? 99 : i;
+}
+function safeParse(str, fallback){
+  try { return JSON.parse(str); } catch(e){ return fallback; }
+}
+function ownedOf(bpId){
+  return owned[bpId] || {};
+}
+function splitMonsters(drop){
+  if (!drop) return [];
+  return [...new Set(
+    String(drop).split(MONSTER_SPLIT).map(s => s.trim()).filter(Boolean)
+  )];
+}
+
+/* ★ 读取内置数据；无效时返回 null */
+function getInlineData(){
+  if (INLINE_DATA == null) return null;
+
+  let d = INLINE_DATA;
+  if (typeof d === 'string'){
+    try { d = JSON.parse(d); }
+    catch(e){
+      console.warn('内置数据字符串解析失败：', e);
+      return null;
+    }
+  }
+  if (Array.isArray(d)) return d;
+  if (typeof d === 'object' && d !== null) return d;
+  return null;
+}
+
+/* ================= 本地存储 ================= */
+function loadState(){
+  owned     = safeParse(localStorage.getItem(LS_OWNED), {}) || {};
+  completed = safeParse(localStorage.getItem(LS_DONE),  {}) || {};
+  const pref = safeParse(localStorage.getItem(LS_PREF),  {}) || {};
+
+  dblMode = !!pref.dblMode;
+  $('dblMode').checked = dblMode;
+
+  cardWidth = Number(pref.cardWidth);
+  if (!Number.isFinite(cardWidth) || cardWidth < 220 || cardWidth > 480) cardWidth = 300;
+
+  viewMode = pref.viewMode === 'table' ? 'table' : 'card';
+  theme    = pref.theme === 'light' ? 'light' : 'dark';
+
+  fsScale = Number(pref.fsScale);
+  if (!Number.isFinite(fsScale) || fsScale < 0.85 || fsScale > 1.3) fsScale = 1;
+
+  if (typeof owned !== 'object' || Array.isArray(owned)) owned = {};
+  if (typeof completed !== 'object' || Array.isArray(completed)) completed = {};
+
+  applyCardWidth();
+  applyViewMode();
+  applyTheme();
+  applyFontSize();
+}
+function saveOwned(){ try{ localStorage.setItem(LS_OWNED, JSON.stringify(owned)); }catch(e){} }
+function saveDone(){  try{ localStorage.setItem(LS_DONE,  JSON.stringify(completed)); }catch(e){} }
+function savePref(){
+  try{
+    localStorage.setItem(LS_PREF, JSON.stringify({
+      dblMode, cardWidth, viewMode, theme, fsScale
+    }));
+  }catch(e){}
+}
+
+/* ================= 主题 / 字号 / 宽度 / 视图 ================= */
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = $('btnTheme');
+  if (btn) btn.textContent = theme === 'light' ? '🌙 深色' : '☀️ 浅色';
+}
+
+function applyFontSize(){
+  document.documentElement.style.setProperty('--fs-scale', fsScale);
+  const pct = Math.round(fsScale * 100);
+  $('fontSizeVal').textContent = pct + '%';
+  const s = $('fontSize');
+  if (s && Number(s.value) !== pct) s.value = pct;
+}
+
+function applyCardWidth(){
+  document.documentElement.style.setProperty('--card-min', cardWidth + 'px');
+  $('cardWidthVal').textContent = cardWidth;
+  const slider = $('cardWidth');
+  if (slider && Number(slider.value) !== cardWidth) slider.value = cardWidth;
+}
+
+function applyViewMode(){
+  const btn = $('btnView');
+  const rangeCtl = $('rangeCtl');
+  if (viewMode === 'table'){
+    btn.textContent = '📋 卡片';
+    btn.title = '切换为卡片视图';
+    if (rangeCtl) rangeCtl.style.display = 'none';
+    document.body.classList.add('table-mode');
+  } else {
+    btn.textContent = '📑 表格';
+    btn.title = '切换为表格视图';
+    if (rangeCtl) rangeCtl.style.display = '';
+    document.body.classList.remove('table-mode');
+  }
+}
+
+/* ================= 表格高度自适应 ================= */
+function fitTableHeight(){
+  if (viewMode !== 'table') return;
+  if (!gridEl.classList.contains('table-layout')) return;
+  const top = gridEl.getBoundingClientRect().top;
+  const h = Math.max(240, Math.round(window.innerHeight - top - 16));
+  gridEl.style.height = h + 'px';
+}
+
+/* ================= 种类导航：高亮与跳转 ================= */
+let activeRaf = null;
+
+function scheduleActiveUpdate(){
+  if (activeRaf) return;
+  activeRaf = requestAnimationFrame(() => {
+    activeRaf = null;
+    updateActiveType();
+  });
+}
+
+function updateActiveType(){
+  const scroller = $('tableScroll');
+  const nav = $('typeNav');
+  if (!scroller || !nav) return;
+
+  const rows = scroller.querySelectorAll('tbody tr[data-type]');
+  if (!rows.length) return;
+
+  const thead = scroller.querySelector('thead');
+  const thH = thead ? thead.offsetHeight : 34;
+  const scRect = scroller.getBoundingClientRect();
+  const threshold = scRect.top + thH + 6;
+
+  let active = rows[0].dataset.type;
+  for (const r of rows){
+    const rr = r.getBoundingClientRect();
+    if (rr.top <= threshold) active = r.dataset.type;
+    else break;
+  }
+  if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2){
+    active = rows[rows.length - 1].dataset.type;
+  }
+
+  nav.querySelectorAll('.type-nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.type === active);
+  });
+}
+
+function scrollToType(type){
+  const scroller = $('tableScroll');
+  if (!scroller) return;
+
+  const rows = scroller.querySelectorAll('tbody tr[data-type]');
+  let row = null;
+  for (const r of rows){
+    if (r.dataset.type === type){ row = r; break; }
+  }
+  if (!row) return;
+
+  const thead = scroller.querySelector('thead');
+  const thH = thead ? thead.offsetHeight : 34;
+
+  const scRect = scroller.getBoundingClientRect();
+  const rr = row.getBoundingClientRect();
+  const target = scroller.scrollTop + (rr.top - scRect.top) - thH - 2;
+
+  scroller.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+  updateActiveType();
+}
+
+/* ================= 数据规范化 ================= */
+function normalize(raw, i){
+  if (!raw || typeof raw !== 'object') return null;
+
+  const id = String(raw.id ?? raw['编号'] ?? raw['图纸名称'] ?? ('bp_' + i));
+  const name = String(raw.name ?? raw['图纸名称'] ?? raw.product ?? raw['成品名称'] ?? id);
+  const product = String(raw.product ?? raw['成品名称'] ?? name);
+  const rank = String(raw.rank ?? raw['品阶'] ?? '未分阶');
+  const type = String(raw.type ?? raw['种类'] ?? '未分类');
+  const drop = String(raw.drop ?? raw['掉落怪物'] ?? '');
+
+  const slots = [];
+  const arrSrc = raw.materials ?? raw['材料'] ?? raw['所需材料'];
+  if (Array.isArray(arrSrc)){
+    for (let k = 0; k < 5; k++){
+      slots.push(arrSrc[k] == null ? '' : String(arrSrc[k]).trim());
+    }
+  } else {
+    for (let k = 1; k <= 5; k++){
+      const v = raw['mat' + k] ?? raw['所需材料' + k];
+      slots.push(v == null ? '' : String(v).trim());
+    }
+  }
+  for (let k = 0; k < 5; k++){
+    if (EMPTY_MAT.has(slots[k])) slots[k] = '';
+  }
+  while (slots.length < 5) slots.push('');
+
+  const materials = [...new Set(slots.slice(0, 3).filter(Boolean))];
+
+  return { id, name, product, rank, type, drop, materials, materials5: slots };
+}
+
+function applyData(data){
+  const arr = Array.isArray(data) ? data
+            : (data.blueprints || data['图纸'] || data['data'] || []);
+  if (!Array.isArray(arr)) throw new Error('数据中没有找到图纸数组');
+
+  BP = arr.map(normalize).filter(Boolean);
+
+  const seen = new Set();
+  BP.forEach((bp, i) => {
+    if (seen.has(bp.id)) bp.id = bp.id + '#' + i;
+    seen.add(bp.id);
+  });
+
+  buildFilters();
+  render();
+}
+
+/* ================= 加载外部 JSON ================= */
+async function loadFromUrl(url){
+  try{
+    const res = await fetch(url, { cache: 'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+    const data = await res.json();
+    applyData(data);
+    noticeEl.hidden = true;
+  }catch(err){
+    showDataError(err, url);
+  }
+}
+
+function showDataError(err, url){
+  noticeEl.hidden = false;
+  noticeEl.innerHTML = `
+    <b>未能自动读取图纸数据文件</b>
+    路径：<code>${esc(url)}</code>　原因：${esc(err.message)}<br>
+    如果你是用「双击 HTML」的方式打开的（file:// 协议），浏览器会禁止读取本地 JSON。<br>
+    解决方案任选其一：<br>
+    ① 点击下方「选择数据文件」手动加载一次；<br>
+    ② 用本地服务器打开，例如在该目录执行 <code>python -m http.server</code>，
+       然后访问 <code>http://localhost:8000/</code>；<br>
+    ③ 把 JSON 直接粘贴到源码顶部的 <code>INLINE_DATA</code>，即可完全离线使用。<br>
+    <div class="act"><button class="btn" id="btnPickData">📂 选择数据文件</button></div>
+    <pre>JSON 格式示例（顶层也可以是纯数组）：
+{
+  "blueprints": [
+    {
+      "id": "锻造图纸1",
+      "rank": "R11",
+      "type": "武器",
+      "name": "阴阳之剑",
+      "product": "阴阳之剑",
+      "materials": [
+        "青锋战刃(法器)", "寒光魔杖(法器)", "玉魄道剑(法器)",
+        "天使之泪", "矿晶"
+      ],
+      "drop": "万狐之主、朝歌大怪"
+    }
+  ]
+}
+（materials 可填 5 项：前 3 项可勾选，后 2 项仅展示）</pre>`;
+  const btn = $('btnPickData');
+  if (btn) btn.onclick = () => $('fileData').click();
+  render();
+}
+
+/* ================= 过滤器构建 ================= */
+function buildFilters(){
+  const ranks = [...new Set(BP.map(b => b.rank).filter(Boolean))]
+    .sort((a, b) => rankNum(a) - rankNum(b) || String(a).localeCompare(String(b)));
+  const types = [...new Set(BP.map(b => b.type).filter(Boolean))]
+    .sort((a, b) => typeOrder(a) - typeOrder(b) || String(a).localeCompare(String(b)));
+
+  filters.ranks.forEach(v => { if (!ranks.includes(v)) filters.ranks.delete(v); });
+  filters.types.forEach(v => { if (!types.includes(v)) filters.types.delete(v); });
+
+  renderChips($('filterRank'),   ranks, filters.ranks,   'rank');
+  renderChips($('filterType'),   types, filters.types,   'type');
+  renderChips($('filterStatus'),
+    [{v:'todo', t:'未完成'}, {v:'done', t:'已完成'}],
+    filters.statuses, 'status');
+}
+
+function renderChips(el, values, set, key){
+  el.innerHTML = values.map(item => {
+    const v = (typeof item === 'object') ? item.v : item;
+    const t = (typeof item === 'object') ? item.t : item;
+    return `<button class="chip ${set.has(v) ? 'on' : ''}" data-k="${key}" data-v="${esc(v)}">${esc(t)}</button>`;
+  }).join('');
+}
+
+/* ================= 过滤逻辑 ================= */
+function getFiltered(){
+  const q = searchText.trim().toLowerCase();
+
+  return BP.filter(bp => {
+    if (filters.ranks.size && !filters.ranks.has(bp.rank)) return false;
+    if (filters.types.size && !filters.types.has(bp.type)) return false;
+
+    if (filters.statuses.size){
+      const isDone = !!completed[bp.id];
+      if (isDone && !filters.statuses.has('done')) return false;
+      if (!isDone && !filters.statuses.has('todo')) return false;
+    }
+
+    if (q){
+      const hay = [
+        bp.name, bp.product, bp.id, bp.rank, bp.type, bp.drop,
+        ...bp.materials5
+      ].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+/* ================= 渲染 ================= */
+function render(){
+  hidePop();
+
+  let sPos = { top: 0, left: 0 };
+  const oldScroller = $('tableScroll');
+  if (oldScroller){
+    sPos.top = oldScroller.scrollTop;
+    sPos.left = oldScroller.scrollLeft;
+  }
+
+  if (!BP.length){
+    statsEl.innerHTML = '';
+    gridEl.style.height = '';
+    gridEl.className = 'grid';
+    gridEl.innerHTML = `<div class="empty"><span>📄</span>暂无图纸数据，请检查数据源或点击「📂 加载」</div>`;
+    return;
+  }
+
+  const list = getFiltered();
+
+  let doneCount = 0, readyCount = 0, ownedMatCount = 0;
+  BP.forEach(bp => {
+    if (completed[bp.id]) doneCount++;
+    const myOwned = ownedOf(bp.id);
+    const all = bp.materials.length > 0 && bp.materials.every(m => myOwned[m]);
+    if (all && !completed[bp.id]) readyCount++;
+  });
+  Object.keys(owned).forEach(bpId => {
+    const o = owned[bpId];
+    if (o && typeof o === 'object'){
+      Object.keys(o).forEach(m => { if (o[m]) ownedMatCount++; });
+    }
+  });
+
+  statsEl.innerHTML =
+    `显示 <b>${list.length}</b> / ${BP.length} 张　·　` +
+    `已完成 <b class="y">${doneCount}</b>　·　` +
+    `材料齐全待完成 <b class="g">${readyCount}</b>　·　` +
+    `已勾选材料 <b>${ownedMatCount}</b> 项`;
+
+  if (!list.length){
+    gridEl.style.height = '';
+    gridEl.className = 'grid';
+    gridEl.innerHTML = `<div class="empty"><span>🔍</span>没有符合条件的图纸</div>`;
+    return;
+  }
+
+  if (viewMode === 'table'){
+    renderTable(list);
+
+    const scroller = $('tableScroll');
+    if (scroller){
+      scroller.scrollTop = sPos.top;
+      scroller.scrollLeft = sPos.left;
+    }
+
+    fitTableHeight();
+    updateActiveType();
+  } else {
+    gridEl.style.height = '';
+    gridEl.className = 'grid';
+    gridEl.innerHTML = list.map(renderCard).join('');
+  }
+}
+
+/* ---------- 卡片视图 ---------- */
+function renderCard(bp){
+  const done = !!completed[bp.id];
+  const myOwned = ownedOf(bp.id);
+  const total = bp.materials.length;
+  const have = bp.materials.filter(m => myOwned[m]).length;
+  const all = total > 0 ? have === total : true;
+
+  const matsHtml = bp.materials.map((m, i) => `
+    <div class="mat ${myOwned[m] ? 'owned' : ''}" data-mat="${esc(m)}">
+      <span class="mnum">${i + 1}</span>
+      <span class="mname">${esc(m)}</span>
+      <span class="mcheck">✓</span>
+    </div>`).join('');
+
+  // ★ 材料4、5：仅展示，不再附加文字
+  const extraHtml = [3, 4].map(i => {
+    const m = bp.materials5[i];
+    if (!m) return '';
+    return `<div class="mat extra">
+      <span class="mnum">${i + 1}</span>
+      <span class="mname">${esc(m)}</span>
+    </div>`;
+  }).join('');
+
+  const allMatsHtml = (matsHtml + extraHtml) || '<div class="no-mat">无材料记录</div>';
+
+  const btn = done
+    ? `<button class="btn-unlock" data-act="unlock" data-id="${esc(bp.id)}"
+         title="解除锁定，重新编辑材料">🔓 解锁</button>`
+    : `<button class="btn-complete ${all ? 'ready' : ''}" data-act="complete" data-id="${esc(bp.id)}"
+         ${all ? '' : 'disabled'}>${all ? '✓ 标记完成' : '材料未齐'}</button>`;
+
+  const monsters = splitMonsters(bp.drop);
+  const dropHtml = monsters.length
+    ? `<div class="drop"><b>掉落：</b>${monsters.map(m =>
+        `<span class="monster-tag" data-monster="${esc(m)}" title="点击查看该怪物的全部掉落">${esc(m)}</span>`
+      ).join('')}</div>`
+    : '';
+
+  return `
+  <article class="card ${done ? 'done' : ''}" data-id="${esc(bp.id)}">
+    <div class="card-head">
+      <span class="tag rank ${rankClass(bp.rank)}">${esc(bp.rank)}</span>
+      <span class="tag type">${esc(bp.type)}</span>
+      <span class="bp-id" title="${esc(bp.id)}">${done ? '🔒 ' : ''}${esc(bp.id)}</span>
+    </div>
+
+    <h3 class="card-title">${esc(bp.name)}</h3>
+
+    <div class="mats">${allMatsHtml}</div>
+
+    <div class="card-foot">
+      <span class="progress ${all ? 'full' : ''}">材料 ${have}/${total}</span>
+      ${btn}
+    </div>
+
+    ${dropHtml}
+  </article>`;
+}
+
+/* ---------- 表格视图：行 ---------- */
+function renderRowHTML(bp){
+  const done = !!completed[bp.id];
+  const myOwned = ownedOf(bp.id);
+  const total = bp.materials.length;
+  const have = bp.materials.filter(m => myOwned[m]).length;
+  const all = total > 0 ? have === total : true;
+
+  const matCells = [0, 1, 2].map(i => {
+    const m = bp.materials[i];
+    if (!m) return `<td class="c-mat"><span class="tmat-empty">—</span></td>`;
+    const own = !!myOwned[m];
+    return `<td class="c-mat">
+      <span class="tmat ${own ? 'owned' : ''}" data-mat="${esc(m)}" title="点击切换拥有状态">${esc(m)}</span>
+    </td>`;
+  }).join('');
+
+  const extraCells = [3, 4].map(i => {
+    const m = bp.materials5[i];
+    return `<td class="c-mat">
+      ${m
+        ? `<span class="tmat extra" title="仅展示，不参与勾选">${esc(m)}</span>`
+        : `<span class="tmat-empty">—</span>`}
+    </td>`;
+  }).join('');
+
+  const btn = done
+    ? `<button class="btn-unlock sm" data-act="unlock" data-id="${esc(bp.id)}" title="解除锁定">🔓</button>`
+    : `<button class="btn-complete sm ${all ? 'ready' : ''}" data-act="complete" data-id="${esc(bp.id)}"
+         ${all ? '' : 'disabled'} title="${all ? '标记完成' : '材料未齐'}">${all ? '✓' : '—'}</button>`;
+
+  const monsters = splitMonsters(bp.drop);
+  const dropHtml = monsters.length
+    ? monsters.map(m =>
+        `<span class="monster-tag" data-monster="${esc(m)}" title="点击查看该怪物的全部掉落">${esc(m)}</span>`
+      ).join('')
+    : `<span class="tmat-empty">—</span>`;
+
+  return `
+    <tr class="${done ? 'done' : ''}" data-id="${esc(bp.id)}" data-type="${esc(bp.type)}">
+      <td class="c-rank"><span class="tag rank ${rankClass(bp.rank)}">${esc(bp.rank)}</span></td>
+      <td class="c-type"><span class="tag type">${esc(bp.type)}</span></td>
+      <td class="c-id">${done ? '🔒 ' : ''}${esc(bp.id)}</td>
+      <td class="c-name">${esc(bp.name)}</td>
+      ${matCells}
+      ${extraCells}
+      <td class="c-progress"><span class="${all ? 'full' : ''}">${have}/${total}</span></td>
+      <td class="c-action">${btn}</td>
+      <td class="c-drop">${dropHtml}</td>
+    </tr>`;
+}
+
+/* ---------- 表格视图：整体（含左侧种类导航） ---------- */
+function renderTable(list){
+  const counts = new Map();
+  list.forEach(bp => counts.set(bp.type, (counts.get(bp.type) || 0) + 1));
+
+  const types = [...counts.keys()].sort((a, b) =>
+    typeOrder(a) - typeOrder(b) || String(a).localeCompare(String(b), 'zh')
+  );
+
+  const navHtml = types.map(t => `
+    <button type="button" class="type-nav-item" data-type="${esc(t)}" title="跳转到「${esc(t)}」">
+      <span class="tname">${esc(t)}</span>
+      <span class="cnt">${counts.get(t)}</span>
+    </button>`).join('');
+
+  const tableHtml = `
+  <table class="bp-table">
+    <thead>
+      <tr>
+        <th>品阶</th>
+        <th>种类</th>
+        <th>编号</th>
+        <th>图纸名称</th>
+        <th>材料1</th>
+        <th>材料2</th>
+        <th>材料3</th>
+        <th>材料4</th>
+        <th>材料5</th>
+        <th style="text-align:center">进度</th>
+        <th style="text-align:center">操作</th>
+        <th>掉落怪物</th>
+      </tr>
+    </thead>
+    <tbody>${list.map(renderRowHTML).join('')}</tbody>
+  </table>`;
+
+  gridEl.style.height = '';
+  gridEl.className = 'table-layout';
+  gridEl.innerHTML = `
+    <nav class="type-nav" id="typeNav">${navHtml}</nav>
+    <div class="table-scroll" id="tableScroll">${tableHtml}</div>`;
+}
+
+/* ================= 怪物掉落浮窗 ================= */
+let popState = { monster:null, anchor:null };
+
+function popItemHTML(bp, currentId){
+  const done = !!completed[bp.id];
+  const myOwned = ownedOf(bp.id);
+
+  const total = bp.materials.length;
+  const have = bp.materials.filter(m => myOwned[m]).length;
+
+  const cells = bp.materials5.map((m, i) => {
+    const num = i + 1;
+
+    if (!m){
+      return `<span class="pm empty"><i>${num}</i><span>—</span></span>`;
+    }
+    if (i >= 3){
+      return `<span class="pm extra"><i>${num}</i><span>${esc(m)}</span><em></em></span>`;
+    }
+    const own = !!myOwned[m];
+    return `<span class="pm ${own ? 'owned' : 'lack'}">
+      <i>${num}</i><span>${esc(m)}</span><em>${own ? '✓' : '○'}</em>
+    </span>`;
+  }).join('');
+
+  const stateTag = done
+    ? `<span class="pop-state done">✓ 已完成</span>`
+    : `<span class="pop-state todo">未完成</span>`;
+
+  return `
+  <div class="pop-item ${done ? 'completed' : ''} ${bp.id === currentId ? 'current' : ''}">
+    <div class="pop-item-head">
+      <span class="pop-item-name">${esc(bp.name)}</span>
+      <span class="tag type">${esc(bp.type)}</span>
+      <span class="tag rank ${rankClass(bp.rank)}">${esc(bp.rank)}</span>
+      ${stateTag}
+      <span class="pop-item-id" title="${esc(bp.id)}">材料 ${have}/${total} · ${esc(bp.id)}</span>
+    </div>
+    <div class="pop-mats">${cells}</div>
+  </div>`;
+}
+
+function positionPop(anchor){
+  const r  = anchor.getBoundingClientRect();
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  if (r.bottom < 0 || r.top > vh) return;
+
+  const pr = popEl.getBoundingClientRect();
+
+  let left = r.left;
+  let top  = r.bottom + 8;
+
+  if (left + pr.width > vw - 10) left = vw - pr.width - 10;
+  if (left < 10) left = 10;
+
+  if (top + pr.height > vh - 10){
+    const above = r.top - pr.height - 8;
+    top = above >= 10 ? above : Math.max(10, vh - pr.height - 10);
+  }
+
+  popEl.style.left = left + 'px';
+  popEl.style.top  = top + 'px';
+}
+
+function showPop(monster, anchor, currentId){
+  document.querySelectorAll('.monster-tag.active').forEach(el => el.classList.remove('active'));
+  anchor.classList.add('active');
+
+  const list = BP.filter(bp => splitMonsters(bp.drop).includes(monster));
+  list.sort((a, b) =>
+    rankNum(a.rank) - rankNum(b.rank) ||
+    typeOrder(a.type) - typeOrder(b.type) ||
+    a.name.localeCompare(b.name, 'zh')
+  );
+
+  const doneN = list.filter(bp => completed[bp.id]).length;
+
+  $('popTitle').innerHTML = `「<b>${esc(monster)}</b>」掉落图纸`;
+  $('popCount').textContent = `${list.length} 张 · 已完成 ${doneN}`;
+  $('popBody').innerHTML = list.length
+    ? list.map(bp => popItemHTML(bp, currentId)).join('')
+    : `<div class="pop-empty">没有找到该怪物的图纸</div>`;
+
+  popEl.hidden = false;
+  popEl.style.visibility = 'hidden';
+  popEl.style.left = '0px';
+  popEl.style.top = '0px';
+
+  positionPop(anchor);
+
+  popEl.style.visibility = '';
+  $('popBody').scrollTop = 0;
+
+  popState = { monster, anchor };
+}
+
+function hidePop(){
+  if (popEl.hidden) return;
+  popEl.hidden = true;
+  document.querySelectorAll('.monster-tag.active').forEach(el => el.classList.remove('active'));
+  popState = { monster:null, anchor:null };
+}
+
+function togglePop(monster, anchor, currentId){
+  if (!popEl.hidden && popState.monster === monster && popState.anchor === anchor){
+    hidePop();
+    return;
+  }
+  showPop(monster, anchor, currentId);
+}
+
+$('popClose').addEventListener('click', hidePop);
+
+document.addEventListener('click', e => {
+  if (popEl.hidden) return;
+  if (e.target.closest('#monsterPop')) return;
+  if (e.target.closest('.monster-tag')) return;
+  hidePop();
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !popEl.hidden) hidePop();
+});
+
+let scrollRAF = null;
+window.addEventListener('scroll', e => {
+  if (popEl.hidden) return;
+  if (popEl.contains(e.target)) return;
+  if (scrollRAF) return;
+
+  scrollRAF = requestAnimationFrame(() => {
+    scrollRAF = null;
+    if (popEl.hidden) return;
+    const a = popState.anchor;
+    if (!a || !document.body.contains(a)){ hidePop(); return; }
+    positionPop(a);
+  });
+}, true);
+
+window.addEventListener('resize', () => {
+  if (!popEl.hidden){
+    const a = popState.anchor;
+    if (!a || !document.body.contains(a)) hidePop();
+    else positionPop(a);
+  }
+  if (viewMode === 'table'){
+    fitTableHeight();
+    updateActiveType();
+  }
+});
+
+gridEl.addEventListener('scroll', ev => {
+  const t = ev.target;
+  if (t && t.id === 'tableScroll') scheduleActiveUpdate();
+}, true);
+
+/* ================= 交互：卡片 / 表格内点击 ================= */
+function toggleMaterial(rowEl, matName){
+  if (!rowEl) return;
+  if (rowEl.classList.contains('done')) return;
+  const bpId = rowEl.dataset.id;
+  if (!bpId || !matName) return;
+
+  if (!owned[bpId] || typeof owned[bpId] !== 'object') owned[bpId] = {};
+
+  if (owned[bpId][matName]) delete owned[bpId][matName];
+  else owned[bpId][matName] = true;
+
+  if (!Object.keys(owned[bpId]).length) delete owned[bpId];
+
+  saveOwned();
+  render();
+}
+
+gridEl.addEventListener('click', ev => {
+  const navItem = ev.target.closest('.type-nav-item');
+  if (navItem){
+    scrollToType(navItem.dataset.type);
+    return;
+  }
+
+  const mTag = ev.target.closest('.monster-tag');
+  if (mTag){
+    ev.stopPropagation();
+    const row = mTag.closest('[data-id]');
+    togglePop(mTag.dataset.monster, mTag, row ? row.dataset.id : null);
+    return;
+  }
+
+  const actBtn = ev.target.closest('[data-act]');
+  if (actBtn){
+    if (actBtn.disabled) return;
+    const id = actBtn.dataset.id;
+    if (actBtn.dataset.act === 'complete'){
+      completed[id] = true;
+      saveDone();
+    } else if (actBtn.dataset.act === 'unlock'){
+      delete completed[id];
+      saveDone();
+    }
+    render();
+    return;
+  }
+
+  const matEl = ev.target.closest('[data-mat]');
+  if (!matEl) return;
+  if (dblMode) return;
+  const row = matEl.closest('[data-id]');
+  toggleMaterial(row, matEl.dataset.mat);
+});
+
+gridEl.addEventListener('dblclick', ev => {
+  const matEl = ev.target.closest('[data-mat]');
+  if (!matEl) return;
+  if (!dblMode) return;
+  const row = matEl.closest('[data-id]');
+  toggleMaterial(row, matEl.dataset.mat);
+});
+
+/* ================= 交互：主题 / 视图 / 滑杆 ================= */
+$('btnTheme').addEventListener('click', () => {
+  theme = theme === 'light' ? 'dark' : 'light';
+  applyTheme();
+  savePref();
+});
+
+$('btnView').addEventListener('click', () => {
+  viewMode = viewMode === 'card' ? 'table' : 'card';
+  applyViewMode();
+  savePref();
+
+  if (viewMode === 'table'){
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  render();
+});
+
+let widthTimer = null;
+$('cardWidth').addEventListener('input', e => {
+  cardWidth = Number(e.target.value) || 300;
+  applyCardWidth();
+  clearTimeout(widthTimer);
+  widthTimer = setTimeout(savePref, 150);
+});
+
+let fsTimer = null;
+$('fontSize').addEventListener('input', e => {
+  const pct = Number(e.target.value) || 100;
+  fsScale = Math.min(1.3, Math.max(0.85, pct / 100));
+  applyFontSize();
+
+  requestAnimationFrame(() => {
+    if (viewMode === 'table'){
+      fitTableHeight();
+      updateActiveType();
+    }
+  });
+
+  clearTimeout(fsTimer);
+  fsTimer = setTimeout(savePref, 150);
+});
+
+/* ================= 交互：过滤器 ================= */
+document.querySelector('.filters').addEventListener('click', ev => {
+  const chip = ev.target.closest('.chip');
+  if (!chip) return;
+
+  const key = chip.dataset.k;
+  const val = chip.dataset.v;
+  const set = key === 'rank'   ? filters.ranks
+            : key === 'type'   ? filters.types
+            :                    filters.statuses;
+
+  if (set.has(val)) set.delete(val);
+  else set.add(val);
+
+  chip.classList.toggle('on');
+  render();
+});
+
+$('clearFilters').addEventListener('click', () => {
+  filters.ranks.clear();
+  filters.types.clear();
+  filters.statuses.clear();
+  searchText = '';
+  $('search').value = '';
+  buildFilters();
+  render();
+});
+
+/* ================= 交互：搜索 ================= */
+let searchTimer = null;
+$('search').addEventListener('input', e => {
+  const v = e.target.value;
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchText = v;
+    render();
+  }, 120);
+});
+
+/* ================= 交互：双击模式 ================= */
+$('dblMode').addEventListener('change', e => {
+  dblMode = e.target.checked;
+  savePref();
+});
+
+/* ================= 导出 / 导入 ================= */
+$('btnExport').addEventListener('click', () => {
+  const payload = {
+    app: 'blueprint-manager',
+    version: 2,
+    exportedAt: new Date().toISOString(),
+    owned,
+    completed
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  const d = new Date();
+  const stamp = `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}` +
+                `_${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}`;
+  a.href = URL.createObjectURL(blob);
+  a.download = `图纸进度_${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+});
+
+$('btnImport').addEventListener('click', () => $('fileProgress').click());
+
+$('fileProgress').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const d = JSON.parse(reader.result);
+      const o = d.owned ?? d['拥有'] ?? {};
+      const c = d.completed ?? d['完成'] ?? {};
+      if (typeof o !== 'object' || o === null || Array.isArray(o)) throw new Error('owned 字段格式不正确');
+      if (typeof c !== 'object' || c === null || Array.isArray(c)) throw new Error('completed 字段格式不正确');
+
+      const newOwned = {};
+      let matCount = 0;
+      Object.keys(o).forEach(bpId => {
+        const v = o[bpId];
+        if (!v || typeof v !== 'object' || Array.isArray(v)) return;
+        const entry = {};
+        Object.keys(v).forEach(m => { if (v[m]) entry[m] = true; });
+        if (Object.keys(entry).length){
+          newOwned[bpId] = entry;
+          matCount += Object.keys(entry).length;
+        }
+      });
+
+      const newDone = {};
+      Object.keys(c).forEach(k => { if (c[k]) newDone[k] = true; });
+
+      if (!confirm(`将用导入的进度覆盖当前进度：\n已勾选材料 ${matCount} 项，已完成图纸 ${Object.keys(newDone).length} 张。\n\n确定继续吗？`)) return;
+
+      owned = newOwned;
+      completed = newDone;
+      saveOwned();
+      saveDone();
+      render();
+      alert('导入成功');
+    }catch(err){
+      alert('导入失败：' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+/* ================= 重置 ================= */
+$('btnReset').addEventListener('click', () => {
+  if (!confirm('确定要清空所有「材料勾选」和「图纸完成」记录吗？此操作不可撤销。')) return;
+  owned = {};
+  completed = {};
+  saveOwned();
+  saveDone();
+  render();
+});
+
+/* ================= 手动加载数据 ================= */
+$('btnLoadData').addEventListener('click', () => $('fileData').click());
+
+$('fileData').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const data = JSON.parse(reader.result);
+      applyData(data);
+      noticeEl.hidden = true;
+    }catch(err){
+      alert('数据文件解析失败：' + err.message);
+    }
+  };
+  reader.readAsText(file);
+});
+
+/* ================= 启动 ================= */
+loadState();
+buildFilters();
+render();
+
+(function initData(){
+  // 优先使用内置数据
+  const inline = getInlineData();
+  if (inline){
+    try{
+      applyData(inline);
+      noticeEl.hidden = true;
+      return;
+    }catch(err){
+      console.warn('内置数据加载失败，回退到外部文件：', err);
+    }
+  }
+  // 没有内置数据（或内置数据无效）时读取外部文件
+  loadFromUrl(DATA_FILE);
+})();
+</script>
+</body>
+</html>
