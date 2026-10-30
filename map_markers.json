@@ -677,5 +677,43 @@
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
+  },
+  {
+    "x": 350,
+    "y": 523,
+    "name": "夷门",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 476,
+    "y": 402,
+    "name": "苗疆圣地",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "长春蔓",
+      "苏叶"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 457,
+    "y": 531,
+    "name": "绝杀阵",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "申公豹坐骑"
+    ],
+    "isSecondary": false
   }
 ]
