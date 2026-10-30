@@ -231,14 +231,38 @@ main{padding:14px 16px 80px}
 }
 .card.done .bp-id{color:var(--gold); font-weight:600}
 
-.card-title{font-size:var(--f15); font-weight:600; margin:0; line-height:1.3; word-break:break-all}
+/* 图纸标题：可点击、有拥有状态 */
+.card-title{
+  font-size:var(--f15); font-weight:600; margin:0; line-height:1.3; word-break:break-all;
+  cursor:pointer; display:flex; align-items:flex-start; gap:8px; transition:.15s;
+}
+.card-title:hover{color:var(--accent);}
+.card.done .card-title:hover{color:var(--gold);}
 
+/* ★ 图纸标签样式 */
+.bp-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: var(--f10); padding: 1px 6px; border-radius: 4px;
+  border: 1px dashed var(--border-hi); color: var(--text-4);
+  font-weight: 400; cursor: pointer; transition: all .12s;
+  margin-top: 2px; flex: none;
+}
+.card-title:hover .bp-badge { border-color: var(--accent); color: var(--accent); }
+.card.has-self .bp-badge {
+  border-style: solid; border-color: var(--green-line);
+  background: var(--green-soft); color: var(--green-text);
+}
+.card.done .bp-badge {
+  border-style: solid; border-color: var(--gold-line);
+  background: var(--gold-soft); color: var(--gold); pointer-events: none;
+}
+
+/* 材料 */
 .mats{display:flex; flex-direction:column; gap:5px}
 .mat{
   display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:7px;
   font-size:var(--f125); border:1px solid var(--border); background:var(--panel2);
-  color:var(--text); /* 提高对比度 */
-  font-weight:500; /* 加粗 */
+  color:var(--text); font-weight:500;
   cursor:pointer; user-select:none; transition:.12s; line-height:1.4;
 }
 .mat:hover{border-color:var(--border-hi); color:var(--text); background:var(--panel3)}
@@ -257,7 +281,7 @@ main{padding:14px 16px 80px}
 .mat.owned .mcheck{opacity:1}
 .card.done .mat{pointer-events:none}
 
-/* ★ 材料4、5：仅展示（弱化样式） */
+/* 材料4、5：仅展示 */
 .mat.extra{
   pointer-events:none; cursor:default;
   border-style:dashed; background:transparent;
@@ -340,7 +364,7 @@ body.quick-active .bp-table tbody tr.done:hover {
   background: var(--gold-soft) !important;
 }
 
-/* ---------- 表格视图（左侧种类导航） ---------- */
+/* ---------- 表格视图 ---------- */
 .table-layout{
   display:flex; align-items:stretch;
   border:1px solid var(--border); border-radius:12px;
@@ -427,15 +451,38 @@ body.table-mode main{padding-bottom:16px}
   font-size:var(--f115); color:var(--text-3); white-space:nowrap;
   font-variant-numeric:tabular-nums; letter-spacing:.2px;
 }
-.c-name{font-weight:600; color:var(--text); word-break:break-all; min-width:118px}
-.c-mat{min-width:126px}
 
+/* 表格图纸名称：可点击 */
+.c-name{
+  font-weight:600; color:var(--text); word-break:break-all; min-width:118px;
+  cursor:pointer; transition:.15s;
+}
+.c-name:hover{color:var(--accent);}
+tr.done .c-name:hover{color:var(--gold);}
+.c-name-inner{display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+
+/* ★ 表格图纸标签 */
+.c-name .bp-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: var(--f95); padding: 1px 5px; border-radius: 4px;
+  border: 1px dashed var(--border-hi); color: var(--text-4);
+  font-weight: 400; cursor: pointer; transition: all .12s;
+}
+.c-name:hover .bp-badge { border-color: var(--accent); color: var(--accent); }
+tr.has-self .c-name .bp-badge {
+  border-style: solid; border-color: var(--green-line);
+  background: var(--green-soft); color: var(--green-text);
+}
+tr.done .c-name .bp-badge {
+  border-style: solid; border-color: var(--gold-line);
+  background: var(--gold-soft); color: var(--gold); pointer-events: none;
+}
+
+.c-mat{min-width:126px}
 .tmat{
   display:inline-block; padding:2px 9px; border-radius:5px;
   border:1px solid var(--border); background:var(--panel2);
-  color:var(--text); /* 提高对比度 */
-  font-weight:500; /* 加粗 */
-  font-size:var(--f115); cursor:pointer; user-select:none;
+  color:var(--text); font-weight:500; font-size:var(--f115); cursor:pointer; user-select:none;
   transition:.12s; line-height:1.45; max-width:100%;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
@@ -445,7 +492,6 @@ body.table-mode main{padding-bottom:16px}
   color:var(--green-text); font-weight:600;
 }
 tr.done .tmat{pointer-events:none}
-
 .tmat.extra{
   pointer-events:none; cursor:default;
   border-style:dashed; background:transparent;
@@ -559,10 +605,7 @@ tr.done .tmat{pointer-events:none}
 .pm.owned i{background:var(--green-soft); color:var(--green-text)}
 .pm.owned em{color:var(--green); font-weight:800}
 
-.pm.lack{
-  color:var(--text); /* 提高对比度 */
-  font-weight:500; /* 加粗 */
-}
+.pm.lack{color:var(--text); font-weight:500;}
 .pm.lack em{color:var(--text-5)}
 
 .pm.extra{color:var(--text-4); font-weight:400;}
@@ -608,7 +651,7 @@ tr.done .tmat{pointer-events:none}
 
 <div class="head">
   <div class="topbar">
-    <div class="brand">📜 图纸管理<em>材料1-3勾选 · 材料4-5展示</em></div>
+    <div class="brand">📜 图纸管理<em>图纸本体 · 材料1-3</em></div>
     <div class="search">
       <input id="search" type="text" autocomplete="off"
              placeholder="模糊搜索：图纸名 / 材料 / 掉落怪物 / 编号…">
@@ -629,7 +672,7 @@ tr.done .tmat{pointer-events:none}
         <b id="fontSizeVal">100%</b>
       </div>
 
-      <label class="switch" title="开启后点击卡片或表格行，一键满材料并完成">
+      <label class="switch" title="开启后点击卡片或表格行，一键满材料+图纸并完成">
         <input type="checkbox" id="quickMode"><span>⚡ 快速完成</span>
       </label>
       
@@ -686,11 +729,12 @@ const INLINE_DATA = null;
 const TYPE_ORDER = ['武器','护甲','头冠','项链','靴子','腰带','手镯','护腕','戒指','指环'];
 const MONSTER_SPLIT = /[、，,；;\/|]+/;
 const EMPTY_MAT = new Set(['暂无','无','－','-','—','']);
+const BP_SELF_KEY = '__self__'; // 图纸本体的特殊键名
 
 /* ================= 状态 ================= */
-const LS_OWNED = 'bp_owned_v2';
+const LS_OWNED = 'bp_owned_v3';
 const LS_DONE  = 'bp_done_v1';
-const LS_PREF  = 'bp_pref_v4';
+const LS_PREF  = 'bp_pref_v5';
 
 let BP = [];
 let owned = {};
@@ -737,6 +781,14 @@ function safeParse(str, fallback){
 }
 function ownedOf(bpId){
   return owned[bpId] || {};
+}
+function hasSelf(bpId){
+  return !!owned[bpId]?.[BP_SELF_KEY];
+}
+function isReady(bp){
+  if (!hasSelf(bp.id)) return false;
+  const myOwned = ownedOf(bp.id);
+  return bp.materials.length > 0 && bp.materials.every(m => myOwned[m]);
 }
 function splitMonsters(drop){
   if (!drop) return [];
@@ -1075,24 +1127,24 @@ function render(){
 
   const list = getFiltered();
 
-  let doneCount = 0, readyCount = 0, ownedMatCount = 0;
+  let doneCount = 0, readyCount = 0, ownedMatCount = 0, selfCount = 0;
   BP.forEach(bp => {
     if (completed[bp.id]) doneCount++;
-    const myOwned = ownedOf(bp.id);
-    const all = bp.materials.length > 0 && bp.materials.every(m => myOwned[m]);
-    if (all && !completed[bp.id]) readyCount++;
+    if (hasSelf(bp.id)) selfCount++;
+    if (isReady(bp) && !completed[bp.id]) readyCount++;
   });
   Object.keys(owned).forEach(bpId => {
     const o = owned[bpId];
     if (o && typeof o === 'object'){
-      Object.keys(o).forEach(m => { if (o[m]) ownedMatCount++; });
+      Object.keys(o).forEach(m => { if (o[m] && m !== BP_SELF_KEY) ownedMatCount++; });
     }
   });
 
   statsEl.innerHTML =
     `显示 <b>${list.length}</b> / ${BP.length} 张　·　` +
+    `已拥有图纸 <b>${selfCount}</b> 张　·　` +
     `已完成 <b class="y">${doneCount}</b>　·　` +
-    `材料齐全待完成 <b class="g">${readyCount}</b>　·　` +
+    `条件齐备待完成 <b class="g">${readyCount}</b>　·　` +
     `已勾选材料 <b>${ownedMatCount}</b> 项`;
 
   if (!list.length){
@@ -1131,10 +1183,15 @@ function render(){
 /* ---------- 卡片视图 ---------- */
 function renderCard(bp){
   const done = !!completed[bp.id];
+  const self = hasSelf(bp.id);
   const myOwned = ownedOf(bp.id);
-  const total = bp.materials.length;
-  const have = bp.materials.filter(m => myOwned[m]).length;
-  const all = total > 0 ? have === total : true;
+  const totalMats = bp.materials.length;
+  const haveMats = bp.materials.filter(m => myOwned[m]).length;
+  
+  // 进度包含图纸本体：1 + 材料数
+  const totalItems = 1 + totalMats;
+  const haveItems = (self ? 1 : 0) + haveMats;
+  const all = isReady(bp);
 
   const matsHtml = bp.materials.map((m, i) => `
     <div class="mat ${myOwned[m] ? 'owned' : ''}" data-mat="${esc(m)}">
@@ -1158,7 +1215,7 @@ function renderCard(bp){
     ? `<button class="btn-unlock" data-act="unlock" data-id="${esc(bp.id)}"
          title="解除锁定，重新编辑材料">🔓 解锁</button>`
     : `<button class="btn-complete ${all ? 'ready' : ''}" data-act="complete" data-id="${esc(bp.id)}"
-         ${all ? '' : 'disabled'}>${all ? '✓ 标记完成' : '材料未齐'}</button>`;
+         ${all ? '' : 'disabled'}>${all ? '✓ 标记完成' : '条件未齐'}</button>`;
 
   const monsters = splitMonsters(bp.drop);
   const dropHtml = monsters.length
@@ -1168,19 +1225,22 @@ function renderCard(bp){
     : '';
 
   return `
-  <article class="card ${done ? 'done' : ''}" data-id="${esc(bp.id)}">
+  <article class="card ${done ? 'done' : ''} ${self ? 'has-self' : ''}" data-id="${esc(bp.id)}">
     <div class="card-head">
       <span class="tag rank ${rankClass(bp.rank)}">${esc(bp.rank)}</span>
       <span class="tag type">${esc(bp.type)}</span>
       <span class="bp-id" title="${esc(bp.id)}">${done ? '🔒 ' : ''}${esc(bp.id)}</span>
     </div>
 
-    <h3 class="card-title">${esc(bp.name)}</h3>
+    <h3 class="card-title" data-bp="${esc(bp.id)}" title="${done ? '图纸已完成，不可修改' : '点击切换图纸拥有状态'}">
+      <span>${esc(bp.name)}</span>
+      <span class="bp-badge">${self ? '✓ 已拥有' : '未获取'}</span>
+    </h3>
 
     <div class="mats">${allMatsHtml}</div>
 
     <div class="card-foot">
-      <span class="progress ${all ? 'full' : ''}">材料 ${have}/${total}</span>
+      <span class="progress ${all ? 'full' : ''}">进度 ${haveItems}/${totalItems}</span>
       ${btn}
     </div>
 
@@ -1191,10 +1251,15 @@ function renderCard(bp){
 /* ---------- 表格视图：行 ---------- */
 function renderRowHTML(bp){
   const done = !!completed[bp.id];
+  const self = hasSelf(bp.id);
   const myOwned = ownedOf(bp.id);
-  const total = bp.materials.length;
-  const have = bp.materials.filter(m => myOwned[m]).length;
-  const all = total > 0 ? have === total : true;
+  const totalMats = bp.materials.length;
+  const haveMats = bp.materials.filter(m => myOwned[m]).length;
+  
+  // 进度包含图纸本体
+  const totalItems = 1 + totalMats;
+  const haveItems = (self ? 1 : 0) + haveMats;
+  const all = isReady(bp);
 
   const matCells = [0, 1, 2].map(i => {
     const m = bp.materials[i];
@@ -1217,7 +1282,7 @@ function renderRowHTML(bp){
   const btn = done
     ? `<button class="btn-unlock sm" data-act="unlock" data-id="${esc(bp.id)}" title="解除锁定">🔓</button>`
     : `<button class="btn-complete sm ${all ? 'ready' : ''}" data-act="complete" data-id="${esc(bp.id)}"
-         ${all ? '' : 'disabled'} title="${all ? '标记完成' : '材料未齐'}">${all ? '✓' : '—'}</button>`;
+         ${all ? '' : 'disabled'} title="${all ? '标记完成' : '条件未齐'}">${all ? '✓' : '—'}</button>`;
 
   const monsters = splitMonsters(bp.drop);
   const dropHtml = monsters.length
@@ -1227,14 +1292,19 @@ function renderRowHTML(bp){
     : `<span class="tmat-empty">—</span>`;
 
   return `
-    <tr class="${done ? 'done' : ''}" data-id="${esc(bp.id)}" data-type="${esc(bp.type)}">
+    <tr class="${done ? 'done' : ''} ${self ? 'has-self' : ''}" data-id="${esc(bp.id)}" data-type="${esc(bp.type)}">
       <td class="c-rank"><span class="tag rank ${rankClass(bp.rank)}">${esc(bp.rank)}</span></td>
       <td class="c-type"><span class="tag type">${esc(bp.type)}</span></td>
       <td class="c-id">${done ? '🔒 ' : ''}${esc(bp.id)}</td>
-      <td class="c-name">${esc(bp.name)}</td>
+      <td class="c-name" data-bp="${esc(bp.id)}" title="${done ? '图纸已完成，不可修改' : '点击切换图纸拥有状态'}">
+        <span class="c-name-inner">
+          <span>${esc(bp.name)}</span>
+          <span class="bp-badge">${self ? '✓ 已拥有' : '未获取'}</span>
+        </span>
+      </td>
       ${matCells}
       ${extraCells}
-      <td class="c-progress"><span class="${all ? 'full' : ''}">${have}/${total}</span></td>
+      <td class="c-progress"><span class="${all ? 'full' : ''}">${haveItems}/${totalItems}</span></td>
       <td class="c-action">${btn}</td>
       <td class="c-drop">${dropHtml}</td>
     </tr>`;
@@ -1288,12 +1358,21 @@ let popState = { monster:null, anchor:null };
 
 function popItemHTML(bp, currentId){
   const done = !!completed[bp.id];
+  const selfOwned = hasSelf(bp.id);
   const myOwned = ownedOf(bp.id);
 
-  const total = bp.materials.length;
-  const have = bp.materials.filter(m => myOwned[m]).length;
+  const totalMats = bp.materials.length;
+  const haveMats = bp.materials.filter(m => myOwned[m]).length;
+  // 进度包含图纸本体
+  const totalItems = 1 + totalMats;
+  const haveItems = (selfOwned ? 1 : 0) + haveMats;
 
-  const cells = bp.materials5.map((m, i) => {
+  // 图纸本体作为第一项
+  const selfHtml = `<span class="pm ${selfOwned ? 'owned' : 'lack'}">
+    <i>图</i><span>${esc(bp.name)}</span><em>${selfOwned ? '✓' : '○'}</em>
+  </span>`;
+
+  const cells = selfHtml + bp.materials5.map((m, i) => {
     const num = i + 1;
     if (!m) return '';
 
@@ -1317,7 +1396,7 @@ function popItemHTML(bp, currentId){
       <span class="tag type">${esc(bp.type)}</span>
       <span class="tag rank ${rankClass(bp.rank)}">${esc(bp.rank)}</span>
       ${stateTag}
-      <span class="pop-item-id" title="${esc(bp.id)}">材料 ${have}/${total} · ${esc(bp.id)}</span>
+      <span class="pop-item-id" title="${esc(bp.id)}">进度 ${haveItems}/${totalItems} · ${esc(bp.id)}</span>
     </div>
     <div class="pop-mats">${cells}</div>
   </div>`;
@@ -1499,7 +1578,7 @@ gridEl.addEventListener('click', ev => {
         const bp = BP.find(b => b.id === id);
         if (bp){
           if (!completed[id]){
-            owned[id] = {};
+            owned[id] = { [BP_SELF_KEY]: true };
             bp.materials.forEach(m => owned[id][m] = true);
             completed[id] = true;
           } else {
@@ -1515,7 +1594,23 @@ gridEl.addEventListener('click', ev => {
     }
   }
 
-  // ⑤ 材料切换（单击模式）
+  // ⑤ 图纸本体切换
+  const bpEl = ev.target.closest('[data-bp]');
+  if (bpEl) {
+    const id = bpEl.dataset.bp;
+    if (id) {
+      if (completed[id]) return; // ★ 图纸完成锁定时，不可更改
+      if (!owned[id] || typeof owned[id] !== 'object') owned[id] = {};
+      if (owned[id][BP_SELF_KEY]) delete owned[id][BP_SELF_KEY];
+      else owned[id][BP_SELF_KEY] = true;
+      if (!Object.keys(owned[id]).length) delete owned[id];
+      saveOwned();
+      render();
+    }
+    return;
+  }
+
+  // ⑥ 材料切换（单击模式）
   const matEl = ev.target.closest('[data-mat]');
   if (!matEl) return;
   if (dblMode) return;
@@ -1525,6 +1620,21 @@ gridEl.addEventListener('click', ev => {
 
 gridEl.addEventListener('dblclick', ev => {
   if (quickMode) return;
+  const bpEl = ev.target.closest('[data-bp]');
+  if (bpEl) {
+    const id = bpEl.dataset.bp;
+    if (id) {
+      if (completed[id]) return; // ★ 图纸完成锁定时，不可更改
+      if (!owned[id] || typeof owned[id] !== 'object') owned[id] = {};
+      if (owned[id][BP_SELF_KEY]) delete owned[id][BP_SELF_KEY];
+      else owned[id][BP_SELF_KEY] = true;
+      if (!Object.keys(owned[id]).length) delete owned[id];
+      saveOwned();
+      render();
+    }
+    return;
+  }
+
   const matEl = ev.target.closest('[data-mat]');
   if (!matEl) return;
   if (!dblMode) return;
@@ -1558,7 +1668,7 @@ $('cardWidth').addEventListener('input', e => {
   widthTimer = setTimeout(savePref, 150);
 });
 
-/* ★ 字体调节：拖动时只更新数字，松手后才应用 */
+/* 字体调节：拖动时只更新数字，松手后才应用 */
 $('fontSize').addEventListener('input', e => {
   const pct = Number(e.target.value) || 100;
   $('fontSizeVal').textContent = pct + '%';
@@ -1633,7 +1743,7 @@ $('quickMode').addEventListener('change', e => {
 $('btnExport').addEventListener('click', () => {
   const payload = {
     app: 'blueprint-manager',
-    version: 2,
+    version: 3, // 版本升级，包含图纸本体状态
     exportedAt: new Date().toISOString(),
     owned,
     completed
@@ -1676,7 +1786,8 @@ $('fileProgress').addEventListener('change', e => {
         Object.keys(v).forEach(m => { if (v[m]) entry[m] = true; });
         if (Object.keys(entry).length){
           newOwned[bpId] = entry;
-          matCount += Object.keys(entry).length;
+          // 统计时区分材料和图纸本体
+          Object.keys(entry).forEach(m => { if (m !== BP_SELF_KEY) matCount++; });
         }
       });
 
@@ -1700,7 +1811,7 @@ $('fileProgress').addEventListener('change', e => {
 
 /* ================= 重置 ================= */
 $('btnReset').addEventListener('click', () => {
-  if (!confirm('确定要清空所有「材料勾选」和「图纸完成」记录吗？此操作不可撤销。')) return;
+  if (!confirm('确定要清空所有「图纸/材料拥有」和「图纸完成」记录吗？此操作不可撤销。')) return;
   owned = {};
   completed = {};
   saveOwned();
