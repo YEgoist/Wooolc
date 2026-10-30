@@ -237,7 +237,9 @@ main{padding:14px 16px 80px}
 .mat{
   display:flex; align-items:center; gap:8px; padding:5px 8px; border-radius:7px;
   font-size:var(--f125); border:1px solid var(--border); background:var(--panel2);
-  color:var(--text-2); cursor:pointer; user-select:none; transition:.12s; line-height:1.4;
+  color:var(--text); /* 提高对比度 */
+  font-weight:500; /* 加粗 */
+  cursor:pointer; user-select:none; transition:.12s; line-height:1.4;
 }
 .mat:hover{border-color:var(--border-hi); color:var(--text); background:var(--panel3)}
 .mat .mnum{
@@ -255,7 +257,7 @@ main{padding:14px 16px 80px}
 .mat.owned .mcheck{opacity:1}
 .card.done .mat{pointer-events:none}
 
-/* ★ 材料4、5：仅展示（虚线边框 + 更暗文字） */
+/* ★ 材料4、5：仅展示（弱化样式） */
 .mat.extra{
   pointer-events:none; cursor:default;
   border-style:dashed; background:transparent;
@@ -312,6 +314,31 @@ main{padding:14px 16px 80px}
 .monster-tag.active{color:var(--accent); border-color:var(--accent); background:var(--accent-soft); font-weight:600}
 
 .no-mat{font-size:var(--f115); color:var(--text-4)}
+
+/* ---------- 快速操作模式视觉反馈 ---------- */
+body.quick-active .card:not(.done),
+body.quick-active .bp-table tbody tr:not(.done) {
+  cursor: pointer;
+}
+body.quick-active .card:not(.done):hover {
+  border-color: var(--green-line);
+  box-shadow: 0 0 0 3px var(--green-soft);
+}
+body.quick-active .bp-table tbody tr:not(.done):hover {
+  background: var(--green-soft) !important;
+}
+
+body.quick-active .card.done,
+body.quick-active .bp-table tbody tr.done {
+  cursor: pointer;
+}
+body.quick-active .card.done:hover {
+  border-color: var(--gold-line);
+  box-shadow: 0 0 0 3px var(--gold-soft);
+}
+body.quick-active .bp-table tbody tr.done:hover {
+  background: var(--gold-soft) !important;
+}
 
 /* ---------- 表格视图（左侧种类导航） ---------- */
 .table-layout{
@@ -406,7 +433,9 @@ body.table-mode main{padding-bottom:16px}
 .tmat{
   display:inline-block; padding:2px 9px; border-radius:5px;
   border:1px solid var(--border); background:var(--panel2);
-  color:var(--text-2); font-size:var(--f115); cursor:pointer; user-select:none;
+  color:var(--text); /* 提高对比度 */
+  font-weight:500; /* 加粗 */
+  font-size:var(--f115); cursor:pointer; user-select:none;
   transition:.12s; line-height:1.45; max-width:100%;
   overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
@@ -419,7 +448,8 @@ tr.done .tmat{pointer-events:none}
 
 .tmat.extra{
   pointer-events:none; cursor:default;
-  border-style:dashed; background:transparent; color:var(--text-4);
+  border-style:dashed; background:transparent;
+  color:var(--text-4); font-weight:400;
 }
 .tmat-empty{color:var(--text-5); font-size:var(--f115)}
 
@@ -506,7 +536,6 @@ tr.done .tmat{pointer-events:none}
 .pop-state.done{background:var(--gold-soft); color:var(--gold)}
 .pop-state.todo{background:var(--panel3); color:var(--text-3)}
 
-/* ★ 修复网格对齐，防止高度被异常拉伸 */
 .pop-mats{
   display:grid; gap:3px 10px;
   grid-template-columns:repeat(auto-fit, minmax(142px, 1fr));
@@ -530,10 +559,13 @@ tr.done .tmat{pointer-events:none}
 .pm.owned i{background:var(--green-soft); color:var(--green-text)}
 .pm.owned em{color:var(--green); font-weight:800}
 
-.pm.lack{color:var(--text-2)}
+.pm.lack{
+  color:var(--text); /* 提高对比度 */
+  font-weight:500; /* 加粗 */
+}
 .pm.lack em{color:var(--text-5)}
 
-.pm.extra{color:var(--text-4)}
+.pm.extra{color:var(--text-4); font-weight:400;}
 .pm.extra i{background:transparent; color:var(--text-5); border:1px dashed var(--border)}
 .pm.extra em{display:none}
 
@@ -591,12 +623,16 @@ tr.done .tmat{pointer-events:none}
         <b id="cardWidthVal">300</b>
       </div>
 
-      <div class="range-ctl" title="拖动调节字体大小">
+      <div class="range-ctl" title="拖动调节字体大小，松手后生效">
         <span>字</span>
         <input type="range" id="fontSize" min="85" max="130" step="5" value="100">
         <b id="fontSizeVal">100%</b>
       </div>
 
+      <label class="switch" title="开启后点击卡片或表格行，一键满材料并完成">
+        <input type="checkbox" id="quickMode"><span>⚡ 快速完成</span>
+      </label>
+      
       <label class="switch" title="开启后需双击材料才能切换状态">
         <input type="checkbox" id="dblMode"><span>双击切换</span>
       </label>
@@ -660,6 +696,7 @@ let BP = [];
 let owned = {};
 let completed = {};
 let dblMode = false;
+let quickMode = false;
 let cardWidth = 300;
 let viewMode = 'card';
 let theme = 'dark';
@@ -727,6 +764,9 @@ function loadState(){
   dblMode = !!pref.dblMode;
   $('dblMode').checked = dblMode;
 
+  quickMode = !!pref.quickMode;
+  $('quickMode').checked = quickMode;
+
   cardWidth = Number(pref.cardWidth);
   if (!Number.isFinite(cardWidth) || cardWidth < 220 || cardWidth > 480) cardWidth = 300;
 
@@ -743,13 +783,14 @@ function loadState(){
   applyViewMode();
   applyTheme();
   applyFontSize();
+  applyQuickMode();
 }
 function saveOwned(){ try{ localStorage.setItem(LS_OWNED, JSON.stringify(owned)); }catch(e){} }
 function saveDone(){  try{ localStorage.setItem(LS_DONE,  JSON.stringify(completed)); }catch(e){} }
 function savePref(){
   try{
     localStorage.setItem(LS_PREF, JSON.stringify({
-      dblMode, cardWidth, viewMode, theme, fsScale
+      dblMode, quickMode, cardWidth, viewMode, theme, fsScale
     }));
   }catch(e){}
 }
@@ -790,6 +831,10 @@ function applyViewMode(){
     if (rangeCtl) rangeCtl.style.display = '';
     document.body.classList.remove('table-mode');
   }
+}
+
+function applyQuickMode(){
+  document.body.classList.toggle('quick-active', quickMode);
 }
 
 /* ================= 表格高度自适应 ================= */
@@ -1098,7 +1143,6 @@ function renderCard(bp){
       <span class="mcheck">✓</span>
     </div>`).join('');
 
-  // 材料4、5：仅展示
   const extraHtml = [3, 4].map(i => {
     const m = bp.materials5[i];
     if (!m) return '';
@@ -1251,8 +1295,6 @@ function popItemHTML(bp, currentId){
 
   const cells = bp.materials5.map((m, i) => {
     const num = i + 1;
-
-    // ★ 修复：如果材料为空，直接不渲染，避免高度异常
     if (!m) return '';
 
     if (i >= 3){
@@ -1416,12 +1458,14 @@ function toggleMaterial(rowEl, matName){
 }
 
 gridEl.addEventListener('click', ev => {
+  // ① 种类导航
   const navItem = ev.target.closest('.type-nav-item');
   if (navItem){
     scrollToType(navItem.dataset.type);
     return;
   }
 
+  // ② 怪物标签
   const mTag = ev.target.closest('.monster-tag');
   if (mTag){
     ev.stopPropagation();
@@ -1430,6 +1474,7 @@ gridEl.addEventListener('click', ev => {
     return;
   }
 
+  // ③ 操作按钮
   const actBtn = ev.target.closest('[data-act]');
   if (actBtn){
     if (actBtn.disabled) return;
@@ -1445,6 +1490,32 @@ gridEl.addEventListener('click', ev => {
     return;
   }
 
+  // ④ 快速模式拦截（点击卡片或表格行）
+  if (quickMode){
+    const target = ev.target.closest('.card, .bp-table tbody tr');
+    if (target){
+      const id = target.dataset.id;
+      if (id){
+        const bp = BP.find(b => b.id === id);
+        if (bp){
+          if (!completed[id]){
+            owned[id] = {};
+            bp.materials.forEach(m => owned[id][m] = true);
+            completed[id] = true;
+          } else {
+            delete owned[id];
+            delete completed[id];
+          }
+          saveOwned();
+          saveDone();
+          render();
+        }
+        return;
+      }
+    }
+  }
+
+  // ⑤ 材料切换（单击模式）
   const matEl = ev.target.closest('[data-mat]');
   if (!matEl) return;
   if (dblMode) return;
@@ -1453,6 +1524,7 @@ gridEl.addEventListener('click', ev => {
 });
 
 gridEl.addEventListener('dblclick', ev => {
+  if (quickMode) return;
   const matEl = ev.target.closest('[data-mat]');
   if (!matEl) return;
   if (!dblMode) return;
@@ -1486,8 +1558,13 @@ $('cardWidth').addEventListener('input', e => {
   widthTimer = setTimeout(savePref, 150);
 });
 
-let fsTimer = null;
+/* ★ 字体调节：拖动时只更新数字，松手后才应用 */
 $('fontSize').addEventListener('input', e => {
+  const pct = Number(e.target.value) || 100;
+  $('fontSizeVal').textContent = pct + '%';
+});
+
+$('fontSize').addEventListener('change', e => {
   const pct = Number(e.target.value) || 100;
   fsScale = Math.min(1.3, Math.max(0.85, pct / 100));
   applyFontSize();
@@ -1498,9 +1575,7 @@ $('fontSize').addEventListener('input', e => {
       updateActiveType();
     }
   });
-
-  clearTimeout(fsTimer);
-  fsTimer = setTimeout(savePref, 150);
+  savePref();
 });
 
 /* ================= 交互：过滤器 ================= */
@@ -1542,9 +1617,15 @@ $('search').addEventListener('input', e => {
   }, 120);
 });
 
-/* ================= 交互：双击模式 ================= */
+/* ================= 交互：模式开关 ================= */
 $('dblMode').addEventListener('change', e => {
   dblMode = e.target.checked;
+  savePref();
+});
+
+$('quickMode').addEventListener('change', e => {
+  quickMode = e.target.checked;
+  applyQuickMode();
   savePref();
 });
 
