@@ -214,14 +214,18 @@ main{padding:14px 16px 80px}
 .card-head{display:flex; align-items:center; gap:6px; min-height:20px}
 .tag{font-size:var(--f11); padding:2px 7px; border-radius:6px; font-weight:700;
      letter-spacing:.3px; white-space:nowrap; flex:none}
-.tag.rank{background:var(--green-soft); color:var(--green-text)}
-.tag.rank.r-b{background:var(--accent-soft); color:var(--accent)}
-.tag.rank.r-c{background:rgba(176,124,255,.16); color:#b07cff}
-.tag.rank.r-d{background:rgba(255,159,67,.15); color:#ff9f43}
-.tag.rank.r-e{background:rgba(255,95,109,.15); color:#ff5f6d}
-:root[data-theme="light"] .tag.rank.r-c{background:rgba(124,58,237,.1); color:#7c3aed}
-:root[data-theme="light"] .tag.rank.r-d{background:rgba(234,88,12,.1); color:#c2410c}
-:root[data-theme="light"] .tag.rank.r-e{background:rgba(220,38,38,.1); color:#dc2626}
+     
+/* ★ 品阶颜色：蓝、紫、橙、红 */
+.tag.rank { background: var(--accent-soft); color: var(--accent); } /* R11-R13 蓝 */
+.tag.rank.r-b { background: rgba(176,124,255,.16); color: #b07cff; } /* R14-R20 紫 */
+.tag.rank.r-c { background: rgba(255,159,67,.15); color: #ff9f43; }   /* R21-R25 橙 */
+.tag.rank.r-d { background: rgba(255,95,109,.15); color: #ff5f6d; }   /* R26+ 红 */
+
+:root[data-theme="light"] .tag.rank { background: rgba(31,111,235,.1); color: #1f6feb; }
+:root[data-theme="light"] .tag.rank.r-b { background: rgba(124,58,237,.1); color: #7c3aed; }
+:root[data-theme="light"] .tag.rank.r-c { background: rgba(234,88,12,.1); color: #c2410c; }
+:root[data-theme="light"] .tag.rank.r-d { background: rgba(220,38,38,.1); color: #dc2626; }
+
 .tag.type{background:var(--panel3); color:var(--text-3)}
 
 .bp-id{
@@ -766,11 +770,10 @@ function rankNum(r){
 function rankClass(rank){
   const n = rankNum(rank);
   if (n === 999) return '';
-  if (n <= 14) return '';
-  if (n <= 18) return 'r-b';
-  if (n <= 22) return 'r-c';
-  if (n <= 25) return 'r-d';
-  return 'r-e';
+  if (n <= 13) return '';      // R11-R13 (蓝)
+  if (n <= 20) return 'r-b';   // R14-R20 (紫)
+  if (n <= 25) return 'r-c';   // R21-R25 (橙)
+  return 'r-d';                // R26+ (红)
 }
 function typeOrder(t){
   const i = TYPE_ORDER.indexOf(t);
@@ -1188,7 +1191,6 @@ function renderCard(bp){
   const totalMats = bp.materials.length;
   const haveMats = bp.materials.filter(m => myOwned[m]).length;
   
-  // 进度包含图纸本体：1 + 材料数
   const totalItems = 1 + totalMats;
   const haveItems = (self ? 1 : 0) + haveMats;
   const all = isReady(bp);
@@ -1256,7 +1258,6 @@ function renderRowHTML(bp){
   const totalMats = bp.materials.length;
   const haveMats = bp.materials.filter(m => myOwned[m]).length;
   
-  // 进度包含图纸本体
   const totalItems = 1 + totalMats;
   const haveItems = (self ? 1 : 0) + haveMats;
   const all = isReady(bp);
@@ -1363,11 +1364,9 @@ function popItemHTML(bp, currentId){
 
   const totalMats = bp.materials.length;
   const haveMats = bp.materials.filter(m => myOwned[m]).length;
-  // 进度包含图纸本体
   const totalItems = 1 + totalMats;
   const haveItems = (selfOwned ? 1 : 0) + haveMats;
 
-  // 图纸本体作为第一项
   const selfHtml = `<span class="pm ${selfOwned ? 'owned' : 'lack'}">
     <i>图</i><span>${esc(bp.name)}</span><em>${selfOwned ? '✓' : '○'}</em>
   </span>`;
@@ -1599,7 +1598,7 @@ gridEl.addEventListener('click', ev => {
   if (bpEl) {
     const id = bpEl.dataset.bp;
     if (id) {
-      if (completed[id]) return; // ★ 图纸完成锁定时，不可更改
+      if (completed[id]) return; // 图纸完成锁定时，不可更改
       if (!owned[id] || typeof owned[id] !== 'object') owned[id] = {};
       if (owned[id][BP_SELF_KEY]) delete owned[id][BP_SELF_KEY];
       else owned[id][BP_SELF_KEY] = true;
@@ -1624,7 +1623,7 @@ gridEl.addEventListener('dblclick', ev => {
   if (bpEl) {
     const id = bpEl.dataset.bp;
     if (id) {
-      if (completed[id]) return; // ★ 图纸完成锁定时，不可更改
+      if (completed[id]) return; // 图纸完成锁定时，不可更改
       if (!owned[id] || typeof owned[id] !== 'object') owned[id] = {};
       if (owned[id][BP_SELF_KEY]) delete owned[id][BP_SELF_KEY];
       else owned[id][BP_SELF_KEY] = true;
@@ -1743,7 +1742,7 @@ $('quickMode').addEventListener('change', e => {
 $('btnExport').addEventListener('click', () => {
   const payload = {
     app: 'blueprint-manager',
-    version: 3, // 版本升级，包含图纸本体状态
+    version: 3,
     exportedAt: new Date().toISOString(),
     owned,
     completed
@@ -1786,7 +1785,6 @@ $('fileProgress').addEventListener('change', e => {
         Object.keys(v).forEach(m => { if (v[m]) entry[m] = true; });
         if (Object.keys(entry).length){
           newOwned[bpId] = entry;
-          // 统计时区分材料和图纸本体
           Object.keys(entry).forEach(m => { if (m !== BP_SELF_KEY) matCount++; });
         }
       });
