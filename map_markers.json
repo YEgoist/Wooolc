@@ -629,7 +629,7 @@
     "name": "部洲",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "宝甲碎片",
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
@@ -651,7 +651,7 @@
     "name": "试炼之地",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "充值魔王Boss\n试炼之心",
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
@@ -700,7 +700,9 @@
       "长春蔓",
       "苏叶"
     ],
-    "spirits": [],
+    "spirits": [
+      "五彩蜘蛛"
+    ],
     "isSecondary": false
   },
   {
@@ -753,6 +755,173 @@
     "spirits": [
       "虎头仙"
     ],
+    "isSecondary": false
+  },
+  {
+    "x": 428,
+    "y": 660,
+    "name": "伽蓝",
+    "direction": "bottom",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "绝云椒椒-增气丹(天级)"
+    ],
+    "spirits": [
+      "异兽祸斗"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 556,
+    "y": 648,
+    "name": "南海",
+    "direction": "top",
+    "zIndex": 10,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 450,
+    "y": 628,
+    "name": "采集点",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "冬虫夏草-赤血丹(地级)"
+    ],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 502,
+    "y": 592,
+    "name": "原始渭水",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "珍稀白额虎"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 552,
+    "y": 541,
+    "name": "七首女将",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 592,
+    "y": 592,
+    "name": "鹤童仙子",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 564,
+    "y": 571,
+    "name": "蓬莱",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "龙葵籽-玲珑丹(地级)"
+    ],
+    "spirits": [
+      "邪恶巫师"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 580,
+    "y": 698,
+    "name": "金鳌",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "人参-凝血丹(地级)"
+    ],
+    "spirits": [
+      "怨气水鬼"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 525,
+    "y": 717,
+    "name": "灵山",
+    "direction": "bottom",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "枯木春-延寿丹(地级)"
+    ],
+    "spirits": [
+      "变异火兽"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 497,
+    "y": 690,
+    "name": "埋骨之地",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "极凶邪兽"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 615,
+    "y": 204,
+    "name": "东鲁",
+    "direction": "top",
+    "zIndex": 10,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 443,
+    "y": 154,
+    "name": "九黎",
+    "direction": "top",
+    "zIndex": 10,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 596,
+    "y": 212,
+    "name": "东鲁矿场",
+    "direction": "left",
+    "zIndex": 10,
+    "remark": "",
+    "collectibles": [
+      "幽灯蕈-培元丹(天级)"
+    ],
+    "spirits": [],
     "isSecondary": false
   }
 ]
