@@ -1071,13 +1071,14 @@ function buildFilters(){
 
   renderChips($('filterRank'),   ranks, filters.ranks,   'rank');
   renderChips($('filterType'),   types, filters.types,   'type');
-  // ★ 增加「有图纸」「无图纸」两个条件
+  // ★ 增加「可完成」条件
   renderChips($('filterStatus'),
     [
       {v:'todo',   t:'未完成'},
       {v:'done',   t:'已完成'},
       {v:'has-bp', t:'有图纸'},
-      {v:'no-bp',  t:'无图纸'}
+      {v:'no-bp',  t:'无图纸'},
+      {v:'ready',  t:'可完成'}
     ],
     filters.statuses, 'status');
 }
@@ -1098,15 +1099,17 @@ function getFiltered(){
     if (filters.ranks.size && !filters.ranks.has(bp.rank)) return false;
     if (filters.types.size && !filters.types.has(bp.type)) return false;
 
-    // ★ 状态过滤：完成状态 + 图纸拥有状态
+    // ★ 状态过滤：完成状态 + 拥有状态 + 可完成状态
     if (filters.statuses.size){
       const isDone = !!completed[bp.id];
       const isSelf = hasSelf(bp.id);
+      const isReadyState = isReady(bp) && !isDone; // 可完成状态
 
       const hasDone = filters.statuses.has('done');
       const hasTodo = filters.statuses.has('todo');
       const hasHasBp = filters.statuses.has('has-bp');
       const hasNoBp  = filters.statuses.has('no-bp');
+      const hasReady = filters.statuses.has('ready');
 
       // 完成状态过滤（只选择一端时生效，两端都选则不过滤）
       if (hasDone || hasTodo){
@@ -1118,6 +1121,11 @@ function getFiltered(){
       if (hasHasBp || hasNoBp){
         if (hasHasBp && !hasNoBp && !isSelf) return false;
         if (hasNoBp && !hasHasBp && isSelf) return false;
+      }
+      
+      // 可完成状态过滤
+      if (hasReady) {
+        if (!isReadyState) return false;
       }
     }
 
