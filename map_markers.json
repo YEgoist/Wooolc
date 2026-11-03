@@ -296,7 +296,7 @@
     "y": 89,
     "name": "鬼方矿场",
     "direction": "left",
-    "zIndex": 1,
+    "zIndex": 5,
     "remark": "",
     "collectibles": [
       "黑石兰-增气丹(灵级)"
@@ -638,7 +638,7 @@
     "x": 421,
     "y": 456,
     "name": "南蛮",
-    "direction": "top",
+    "direction": "left",
     "zIndex": 10,
     "remark": "",
     "collectibles": [],
@@ -673,7 +673,7 @@
     "name": "神洲",
     "direction": "bottom",
     "zIndex": 1,
-    "remark": "",
+    "remark": "材料魔王Boss",
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
@@ -712,7 +712,9 @@
     "direction": "top",
     "zIndex": 1,
     "remark": "",
-    "collectibles": [],
+    "collectibles": [
+      "回神草-百转丹(地级)"
+    ],
     "spirits": [
       "申公豹坐骑"
     ],
@@ -723,7 +725,7 @@
     "y": 570,
     "name": "昆仑矿场",
     "direction": "top",
-    "zIndex": 1,
+    "zIndex": 5,
     "remark": "",
     "collectibles": [
       "元胡-补元丹(地级)"
@@ -750,7 +752,7 @@
     "name": "冀州秘境",
     "direction": "right",
     "zIndex": 1,
-    "remark": "",
+    "remark": "宝石魔王Boss",
     "collectibles": [],
     "spirits": [
       "虎头仙"
@@ -916,10 +918,56 @@
     "y": 212,
     "name": "东鲁矿场",
     "direction": "left",
-    "zIndex": 10,
+    "zIndex": 5,
     "remark": "",
     "collectibles": [
       "幽灯蕈-培元丹(天级)"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 266,
+    "y": 598,
+    "name": "苏全孝",
+    "direction": "left",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 289,
+    "y": 574,
+    "name": "苏全忠",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 354,
+    "y": 354,
+    "name": "南蛮渔场",
+    "direction": "top",
+    "zIndex": 5,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 431,
+    "y": 435,
+    "name": "南蛮洞府",
+    "direction": "top",
+    "zIndex": 5,
+    "remark": "矿石魔王Boss",
+    "collectibles": [
+      "茯苓-冰心丹(地级)"
     ],
     "spirits": [],
     "isSecondary": false
