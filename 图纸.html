@@ -1071,14 +1071,15 @@ function buildFilters(){
 
   renderChips($('filterRank'),   ranks, filters.ranks,   'rank');
   renderChips($('filterType'),   types, filters.types,   'type');
-  // ★ 增加「可完成」条件
+  // ★ 增加「缺材料」条件
   renderChips($('filterStatus'),
     [
-      {v:'todo',   t:'未完成'},
-      {v:'done',   t:'已完成'},
-      {v:'has-bp', t:'有图纸'},
-      {v:'no-bp',  t:'无图纸'},
-      {v:'ready',  t:'可完成'}
+      {v:'todo',      t:'未完成'},
+      {v:'done',      t:'已完成'},
+      {v:'has-bp',    t:'有图纸'},
+      {v:'no-bp',     t:'无图纸'},
+      {v:'ready',     t:'可完成'},
+      {v:'lack-mat',  t:'缺材料'}
     ],
     filters.statuses, 'status');
 }
@@ -1099,17 +1100,22 @@ function getFiltered(){
     if (filters.ranks.size && !filters.ranks.has(bp.rank)) return false;
     if (filters.types.size && !filters.types.has(bp.type)) return false;
 
-    // ★ 状态过滤：完成状态 + 拥有状态 + 可完成状态
+    // ★ 状态过滤：完成状态 + 拥有状态 + 可完成 + 缺材料
     if (filters.statuses.size){
       const isDone = !!completed[bp.id];
       const isSelf = hasSelf(bp.id);
-      const isReadyState = isReady(bp) && !isDone; // 可完成状态
+      const myOwned = ownedOf(bp.id);
+      const matsAll = bp.materials.length > 0 && bp.materials.every(m => myOwned[m]);
+      
+      const isReadyState = isSelf && matsAll && !isDone; // 可完成
+      const isLackMat = !matsAll; // 缺材料（材料1-3未全齐）
 
-      const hasDone = filters.statuses.has('done');
-      const hasTodo = filters.statuses.has('todo');
-      const hasHasBp = filters.statuses.has('has-bp');
-      const hasNoBp  = filters.statuses.has('no-bp');
-      const hasReady = filters.statuses.has('ready');
+      const hasDone    = filters.statuses.has('done');
+      const hasTodo    = filters.statuses.has('todo');
+      const hasHasBp   = filters.statuses.has('has-bp');
+      const hasNoBp    = filters.statuses.has('no-bp');
+      const hasReady   = filters.statuses.has('ready');
+      const hasLackMat = filters.statuses.has('lack-mat');
 
       // 完成状态过滤（只选择一端时生效，两端都选则不过滤）
       if (hasDone || hasTodo){
@@ -1126,6 +1132,11 @@ function getFiltered(){
       // 可完成状态过滤
       if (hasReady) {
         if (!isReadyState) return false;
+      }
+
+      // 缺材料过滤（材料1-3未全齐）
+      if (hasLackMat) {
+        if (!isLackMat) return false;
       }
     }
 
