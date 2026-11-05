@@ -441,7 +441,7 @@
     "x": 601,
     "y": 389,
     "name": "玄龟",
-    "direction": "top",
+    "direction": "bottom",
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
@@ -804,7 +804,7 @@
     "name": "原始渭水",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "雷灵晶、离神露、千年温玉",
     "collectibles": [],
     "spirits": [
       "珍稀白额虎"
@@ -1006,6 +1006,17 @@
     "collectibles": [
       "天云草实-冰心丹(天级)"
     ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 601,
+    "y": 390,
+    "name": "界牌关",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
     "spirits": [],
     "isSecondary": false
   }
