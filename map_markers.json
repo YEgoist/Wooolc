@@ -527,7 +527,7 @@
     "x": 703,
     "y": 122,
     "name": "清心",
-    "direction": "top",
+    "direction": "right",
     "zIndex": 1,
     "remark": "",
     "collectibles": [
@@ -616,7 +616,7 @@
     "name": "芦洲",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "铁戟碎片",
     "collectibles": [
       "川贝-回灵丹(地级)"
     ],
@@ -765,7 +765,7 @@
     "name": "伽蓝",
     "direction": "bottom",
     "zIndex": 1,
-    "remark": "",
+    "remark": "羽化晶石、血钻",
     "collectibles": [
       "绝云椒椒-增气丹(天级)"
     ],
@@ -854,7 +854,7 @@
     "name": "金鳌",
     "direction": "right",
     "zIndex": 1,
-    "remark": "",
+    "remark": "南海玄冰",
     "collectibles": [
       "人参-凝血丹(地级)"
     ],
@@ -869,7 +869,7 @@
     "name": "灵山",
     "direction": "bottom",
     "zIndex": 1,
-    "remark": "",
+    "remark": "血钻",
     "collectibles": [
       "枯木春-延寿丹(地级)"
     ],
@@ -968,6 +968,43 @@
     "remark": "矿石魔王Boss",
     "collectibles": [
       "茯苓-冰心丹(地级)"
+    ],
+    "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 559,
+    "y": 678,
+    "name": "薛定",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [],
+    "isSecondary": true
+  },
+  {
+    "x": 717,
+    "y": 296,
+    "name": "末日坟场",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [],
+    "spirits": [
+      "十八层地狱小鬼"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 703,
+    "y": 85,
+    "name": "毒瘴丘陵",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "天云草实-冰心丹(天级)"
     ],
     "spirits": [],
     "isSecondary": false
