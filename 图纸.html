@@ -621,6 +621,21 @@ tr.done .tmat{pointer-events:none}
 
 .pop-empty{text-align:center; color:var(--text-3); font-size:var(--f125); padding:24px 10px}
 
+/* ---------- 自定义悬浮提示 (Tooltip) ---------- */
+.tip{
+  position:fixed; z-index:200;
+  padding:5px 10px; border-radius:7px;
+  font-size:var(--f12); line-height:1.4;
+  background:var(--pop-bg);
+  color:var(--text);
+  border:1px solid var(--pop-border);
+  box-shadow:var(--shadow-pop);
+  pointer-events:none;
+  white-space:nowrap;
+  max-width:300px;
+}
+.tip[hidden]{display:none}
+
 /* ---------- 提示 / 空态 ---------- */
 .notice{
   background:rgba(255,95,109,.07); border:1px solid rgba(255,95,109,.35);
@@ -716,6 +731,9 @@ tr.done .tmat{pointer-events:none}
   <div class="pop-body" id="popBody"></div>
 </div>
 
+<!-- 自定义悬浮提示 -->
+<div id="tooltip" class="tip" hidden></div>
+
 <input type="file" id="fileProgress" accept=".json,application/json" hidden>
 <input type="file" id="fileData" accept=".json,application/json" hidden>
 
@@ -757,6 +775,7 @@ const gridEl   = $('grid');
 const statsEl  = $('stats');
 const noticeEl = $('notice');
 const popEl    = $('monsterPop');
+const tipEl    = $('tooltip');
 
 /* ================= 工具函数 ================= */
 function esc(s){
@@ -808,6 +827,54 @@ function getInlineData(){
     catch(e){ console.warn('内置数据解析失败：', e); return null; }
   }
   return (Array.isArray(d) || (typeof d === 'object' && d !== null)) ? d : null;
+}
+
+/* ★ 获取指定品阶头冠图纸材料1、2、3的前两个字（跳过中括号） */
+function getHeadArmorTip(rank) {
+  const bp = BP.find(b => b.rank === rank && b.type === '头冠');
+  if (!bp || !bp.materials || bp.materials.length === 0) return '';
+  
+  const parts = bp.materials.slice(0, 3).map(m => {
+    if (!m) return '';
+    let name = m;
+    // 如果是 R20、R21、R22 包含中括号，取右括号后面的内容
+    const rightBracket = name.lastIndexOf(']');
+    if (rightBracket !== -1) {
+      name = name.substring(rightBracket + 1);
+    }
+    return name.substring(0, 2);
+  }).filter(Boolean);
+  
+  return parts.join('、');
+}
+
+/* ================= 自定义 Tooltip ================= */
+function showTip(text, anchor){
+  if (!text) return;
+  tipEl.textContent = text;
+  tipEl.hidden = false;
+  tipEl.style.visibility = 'hidden';
+  tipEl.style.left = '0px';
+  tipEl.style.top = '0px';
+
+  const r  = anchor.getBoundingClientRect();
+  const pr = tipEl.getBoundingClientRect();
+  const vw = window.innerWidth;
+
+  let left = r.left;
+  let top  = r.bottom + 6;
+
+  if (left + pr.width > vw - 10) left = vw - pr.width - 10;
+  if (left < 10) left = 10;
+
+  tipEl.style.left = left + 'px';
+  tipEl.style.top  = top + 'px';
+  tipEl.style.visibility = '';
+}
+
+function hideTip(){
+  if (tipEl.hidden) return;
+  tipEl.hidden = true;
 }
 
 /* ================= 本地存储 ================= */
@@ -1071,7 +1138,7 @@ function buildFilters(){
 
   renderChips($('filterRank'),   ranks, filters.ranks,   'rank');
   renderChips($('filterType'),   types, filters.types,   'type');
-  // ★ 增加「缺材料」条件
+  // 增加「缺材料」条件
   renderChips($('filterStatus'),
     [
       {v:'todo',      t:'未完成'},
@@ -1088,9 +1155,35 @@ function renderChips(el, values, set, key){
   el.innerHTML = values.map(item => {
     const v = (typeof item === 'object') ? item.v : item;
     const t = (typeof item === 'object') ? item.t : item;
-    return `<button class="chip ${set.has(v) ? 'on' : ''}" data-k="${key}" data-v="${esc(v)}">${esc(t)}</button>`;
+    
+    let tipAttr = '';
+    // ★ 针对品阶增加自定义 data-tip（不再使用原生 title）
+    if (key === 'rank') {
+      const n = rankNum(v);
+      if (n >= 11 && n <= 25) {
+        const tip = getHeadArmorTip(v);
+        if (tip) {
+          tipAttr = ` data-tip="${esc(tip)}"`;
+        }
+      }
+    }
+
+    return `<button class="chip ${set.has(v) ? 'on' : ''}" data-k="${key}" data-v="${esc(v)}"${tipAttr}>${esc(t)}</button>`;
   }).join('');
 }
+
+/* ★ 自定义 tooltip 事件委托：鼠标移入立即显示，移出隐藏 */
+document.querySelector('.filters').addEventListener('mouseover', ev => {
+  const chip = ev.target.closest('.chip[data-tip]');
+  if (!chip) return;
+  showTip(chip.dataset.tip, chip);
+});
+document.querySelector('.filters').addEventListener('mouseout', ev => {
+  const chip = ev.target.closest('.chip[data-tip]');
+  if (!chip) return;
+  if (chip.contains(ev.relatedTarget)) return;
+  hideTip();
+});
 
 /* ================= 过滤逻辑 ================= */
 function getFiltered(){
@@ -1100,7 +1193,7 @@ function getFiltered(){
     if (filters.ranks.size && !filters.ranks.has(bp.rank)) return false;
     if (filters.types.size && !filters.types.has(bp.type)) return false;
 
-    // ★ 状态过滤：完成状态 + 拥有状态 + 可完成 + 缺材料
+    // 状态过滤：完成状态 + 拥有状态 + 可完成 + 缺材料
     if (filters.statuses.size){
       const isDone = !!completed[bp.id];
       const isSelf = hasSelf(bp.id);
@@ -1153,6 +1246,7 @@ function getFiltered(){
 
 /* ================= 渲染 ================= */
 function render(){
+  hideTip(); // 重绘时隐藏 tooltip
   hidePop();
 
   let sPos = { top: 0, left: 0 };
@@ -1529,6 +1623,7 @@ document.addEventListener('keydown', e => {
 
 let scrollRAF = null;
 window.addEventListener('scroll', e => {
+  hideTip(); // 滚动时隐藏 tooltip
   if (popEl.hidden) return;
   if (popEl.contains(e.target)) return;
   if (scrollRAF) return;
@@ -1543,6 +1638,7 @@ window.addEventListener('scroll', e => {
 }, true);
 
 window.addEventListener('resize', () => {
+  hideTip();
   if (!popEl.hidden){
     const a = popState.anchor;
     if (!a || !document.body.contains(a)) hidePop();
