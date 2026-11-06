@@ -869,7 +869,7 @@
     "name": "灵山",
     "direction": "bottom",
     "zIndex": 1,
-    "remark": "血钻",
+    "remark": "充值魔王Boss\n草木之精、血钻",
     "collectibles": [
       "枯木春-延寿丹(地级)"
     ],
@@ -884,8 +884,10 @@
     "name": "埋骨之地",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
-    "collectibles": [],
+    "remark": "魔气结晶、空冥石",
+    "collectibles": [
+      "琉璃百合-回灵丹(天级)"
+    ],
     "spirits": [
       "极凶邪兽"
     ],
@@ -1034,6 +1036,21 @@
     ],
     "spirits": [
       "殷商战神"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 556,
+    "y": 316,
+    "name": "九幽之地",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "香辛果"
+    ],
+    "spirits": [
+      "最后的龙族"
     ],
     "isSecondary": false
   }
