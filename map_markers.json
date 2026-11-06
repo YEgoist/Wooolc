@@ -917,7 +917,7 @@
     "x": 596,
     "y": 212,
     "name": "东鲁矿场",
-    "direction": "left",
+    "direction": "bottom",
     "zIndex": 5,
     "remark": "",
     "collectibles": [
@@ -1017,7 +1017,24 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [],
-    "spirits": [],
+    "spirits": [
+      "沙漠之王"
+    ],
+    "isSecondary": false
+  },
+  {
+    "x": 525,
+    "y": 201,
+    "name": "众圣之墓",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "赤念果-百转丹(天级)"
+    ],
+    "spirits": [
+      "殷商战神"
+    ],
     "isSecondary": false
   }
 ]
