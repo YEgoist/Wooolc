@@ -527,7 +527,7 @@
     "x": 703,
     "y": 122,
     "name": "清心",
-    "direction": "right",
+    "direction": "bottom",
     "zIndex": 1,
     "remark": "",
     "collectibles": [
@@ -1052,6 +1052,19 @@
     "spirits": [
       "最后的龙族"
     ],
+    "isSecondary": false
+  },
+  {
+    "x": 731,
+    "y": 107,
+    "name": "游魂关",
+    "direction": "right",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "须弥蔷薇"
+    ],
+    "spirits": [],
     "isSecondary": false
   }
 ]
