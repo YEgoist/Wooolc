@@ -454,7 +454,7 @@
     "x": 488,
     "y": 254,
     "name": "采集点",
-    "direction": "top",
+    "direction": "bottom",
     "zIndex": 1,
     "remark": "",
     "collectibles": [
@@ -897,7 +897,7 @@
     "x": 615,
     "y": 204,
     "name": "东鲁",
-    "direction": "top",
+    "direction": "left",
     "zIndex": 10,
     "remark": "",
     "collectibles": [],
@@ -916,10 +916,10 @@
     "isSecondary": false
   },
   {
-    "x": 596,
-    "y": 212,
+    "x": 626,
+    "y": 186,
     "name": "东鲁矿场",
-    "direction": "bottom",
+    "direction": "right",
     "zIndex": 5,
     "remark": "",
     "collectibles": [
@@ -1028,7 +1028,7 @@
     "x": 525,
     "y": 201,
     "name": "众圣之墓",
-    "direction": "top",
+    "direction": "bottom",
     "zIndex": 1,
     "remark": "",
     "collectibles": [
@@ -1065,6 +1065,23 @@
       "须弥蔷薇"
     ],
     "spirits": [],
+    "isSecondary": false
+  },
+  {
+    "x": 507,
+    "y": 186,
+    "name": "断魂野",
+    "direction": "top",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "龙骨草",
+      "枇华"
+    ],
+    "spirits": [
+      "巫族大能",
+      "火魔"
+    ],
     "isSecondary": false
   }
 ]
