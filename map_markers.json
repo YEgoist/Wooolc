@@ -1047,7 +1047,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "香辛果"
+      "香辛果-凝血丹(天级)"
     ],
     "spirits": [
       "最后的龙族"
@@ -1062,7 +1062,7 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "须弥蔷薇"
+      "须弥蔷薇-赤血丹(天级)"
     ],
     "spirits": [],
     "isSecondary": false
@@ -1075,8 +1075,8 @@
     "zIndex": 1,
     "remark": "",
     "collectibles": [
-      "龙骨草",
-      "枇华"
+      "龙骨草-百转丹(神级)",
+      "枇华-赤血丹(神级)"
     ],
     "spirits": [
       "巫族大能",
