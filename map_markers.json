@@ -186,7 +186,7 @@
     "name": "皇宫入口",
     "direction": "top",
     "zIndex": 2,
-    "remark": "殷九黎掉落“轰天雷”",
+    "remark": "殷九黎-轰天雷",
     "collectibles": [
       "七七竹-冰心丹(妖级)"
     ],
@@ -899,7 +899,7 @@
     "name": "东鲁",
     "direction": "left",
     "zIndex": 10,
-    "remark": "",
+    "remark": "东鲁小怪-东鲁守军、小老虎(毒瘴丘陵)\n东鲁水晶-饥渴的蚩尤之灵",
     "collectibles": [],
     "spirits": [],
     "isSecondary": false
@@ -919,7 +919,7 @@
     "x": 626,
     "y": 186,
     "name": "东鲁矿场",
-    "direction": "right",
+    "direction": "top",
     "zIndex": 5,
     "remark": "",
     "collectibles": [
@@ -991,7 +991,7 @@
     "name": "末日坟场",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "地藏魔王-魔脉",
     "collectibles": [],
     "spirits": [
       "十八层地狱小鬼"
@@ -999,12 +999,12 @@
     "isSecondary": false
   },
   {
-    "x": 703,
-    "y": 85,
+    "x": 701,
+    "y": 86,
     "name": "毒瘴丘陵",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "变异的白虎-虎灵",
     "collectibles": [
       "天云草实-冰心丹(天级)"
     ],
@@ -1017,7 +1017,7 @@
     "name": "界牌关",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "庆忌兽-聆听兽语",
     "collectibles": [],
     "spirits": [
       "沙漠之王"
@@ -1055,12 +1055,12 @@
     "isSecondary": false
   },
   {
-    "x": 731,
+    "x": 734,
     "y": 107,
     "name": "游魂关",
     "direction": "right",
     "zIndex": 1,
-    "remark": "",
+    "remark": "枯木春x10\n绝云椒椒x10\n琉璃百合x10\n清心x10",
     "collectibles": [
       "须弥蔷薇-赤血丹(天级)"
     ],
@@ -1073,7 +1073,7 @@
     "name": "断魂野",
     "direction": "top",
     "zIndex": 1,
-    "remark": "",
+    "remark": "渔魔王Boss",
     "collectibles": [
       "龙骨草-百转丹(神级)",
       "枇华-赤血丹(神级)"
@@ -1082,6 +1082,19 @@
       "巫族大能",
       "火魔"
     ],
+    "isSecondary": false
+  },
+  {
+    "x": 654,
+    "y": 211,
+    "name": "青龙关",
+    "direction": "bottom",
+    "zIndex": 1,
+    "remark": "",
+    "collectibles": [
+      "日落果-玲珑丹(天级)"
+    ],
+    "spirits": [],
     "isSecondary": false
   }
 ]
